@@ -11,13 +11,13 @@ export class TokenController {
     private readonly userService: UserService,
   ) {}
 
-  @Get('generate/:userId')
-  async generateToken(@Param('userId') userId: string) {
-    const user = await this.userService.findUserByWxId(userId);
-    if (!user) throw new Error('can not found user');
-    const token = this.jwtService.generateToken(user);
-    return { token };
-  }
+  // @Get('generate/:userId')
+  // async generateToken(@Param('userId') userId: string) {
+  //   const user = await this.userService.findUserByWxId(userId);
+  //   if (!user) throw new Error('can not found user');
+  //   const token = this.jwtService.generateToken(user);
+  //   return { token };
+  // }
 
   @Get('verify/:token')
   verifyToken(@Param('token') token: string) {

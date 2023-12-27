@@ -1,34 +1,28 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('user')
+@Entity("user", { schema: "sxb" })
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column({ name: 'wxId', nullable: true })
-  wxId: string;
+  @Column("varchar", { name: "phone_number", length: 20 })
+  phoneNumber: string;
 
-  @Column({ nullable: true })
-  email: string;
+  @Column("varchar", { name: "nickname", length: 50 })
+  nickname: string;
 
-  @Column({ nullable: true })
-  phone: string;
+  @Column("int", { name: "role_id" })
+  roleId: number;
 
-  @Column({ name: 'phoneCode', nullable: true })
-  phoneCode: string;
+  @Column("varchar", { name: "password", nullable: true, length: 32 })
+  password: string | null;
 
-  @Column({ name: 'createTime' })
-  createTime: Date;
+  @Column("timestamp", { name: "creation_time" })
+  creationTime: Date;
 
-  @Column({ name: 'activeTime', nullable: true })
-  activeTime: Date;
+  @Column("timestamp", { name: "last_login_time" })
+  lastLoginTime: Date;
 
-  @Column()
+  @Column("int", { name: "status" })
   status: number;
-
-  @Column()
-  name: string;
-
-  @Column({ nullable: true })
-  pwd: string;
 }

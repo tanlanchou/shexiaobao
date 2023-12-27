@@ -31,7 +31,7 @@ export class TempTokenGuard implements CanActivate {
       }
 
       const caleToken = this.tempTokenService.generateToken(
-        user.name +
+        user.phoneNumber +
           (this.configService.get<string>(`tokenMixin`) || tokenMixin),
         timeSpan,
       );
