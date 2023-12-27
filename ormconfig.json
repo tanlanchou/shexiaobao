@@ -1,0 +1,12 @@
+{
+    "type": "mysql",
+    "host": "60.205.227.108",
+    "port": 3306,
+    "username": "root",
+    "password": "4180d28Fmysql",
+    "database": "sxb",
+    "entities": [
+        "src/connect/*.ts"
+    ],
+    "synchronize": false
+}
