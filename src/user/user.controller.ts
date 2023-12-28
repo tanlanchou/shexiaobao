@@ -8,21 +8,27 @@ import {
   Body,
   UsePipes,
   UseGuards,
+  Logger
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../connect/user.entity';
 import { UserStatus } from '../common/enmu';
 import { JwtCommonService } from 'src/auth/jwt.common.service';
-import { ValidateEmailPipe } from 'src/pipe/validate.email.pipe';
 import * as resultHelper from 'src/common/resultHelper';
 import { AuthGuard } from 'src/guard/auth.guard';
+import { CaptchaService } from 'src/serice/captcha.service';
+import { ValidatePhonePipe } from 'src/pipe/validate.phone.pipe';
+import { LoginDto, LoginByCodeDto } from 'src/dto/login.dto';
+import { RegisterDto } from 'src/dto/register.dto';
 
 @Controller('users')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtCommonService,
-  ) {}
+    private readonly captchaService: CaptchaService
+  ) { }
 
   @Get()
   @UseGuards(AuthGuard)
@@ -31,56 +37,111 @@ export class UserController {
     return resultHelper.success(users);
   }
 
-  // @Get('/:id')
-  // @UseGuards(AuthGuard)
-  // async getUserById(@Param('id') id: number) {
-  //   const user = this.userService.findUserById(id);
-  //   return resultHelper.success(user);
-  // }
+  @Post('/login')
+  async login(@Body() loginDto: LoginDto) {
+    try {
+      const user = await this.userService.findUserByPhonePWD(loginDto.phone, loginDto.password);
+      if (!user) return resultHelper.error(500, `用户不存在`);
 
-  // @Put(':id')
-  // @UseGuards(AuthGuard)
-  // async updateUser(@Param('id') id: number, @Body() userData: Partial<User>) {
-  //   try {
-  //     const user = this.userService.updateUser(id, userData);
-  //     return resultHelper.success(user);
-  //   } catch (error) {
-  //     return resultHelper.error(500, error.message);
-  //   }
-  // }
+      if (user.status === UserStatus.disable) {
+        return resultHelper.error(500, `用户已被禁用`);
+      }
 
-  // @Delete(':id')
-  // @UseGuards(AuthGuard)
-  // async deleteUser(@Param('id') id: number) {
-  //   try {
-  //     this.userService.deleteUser(id);
-  //     return resultHelper.success();
-  //   } catch (error) {
-  //     return resultHelper.error(500, error.message);
-  //   }
-  // }
+      user.lastLoginTime = new Date();
+      const newUser = await this.userService.updateUser(user.id, user);
+      const token = this.jwtService.generateToken(newUser);
 
-  // @Put(':id/status')
-  // @UseGuards(AuthGuard)
-  // async updateUserStatus(
-  //   @Param('id') id: number,
-  //   @Body('status') status: number,
-  // ): Promise<User | undefined> {
-  //   return this.userService.updateUserStatus(id, status);
-  // }
+      return resultHelper.success(token, '登录成功');
+    }
+    catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
+  }
 
-  // @Put(':id/active/time')
-  // @UseGuards(AuthGuard)
-  // async updateUserActiveTime(
-  //   @Param('id') id: number,
-  // ): Promise<User | undefined> {
-  //   return this.userService.updateUserActiveTime(id);
-  // }
+  @Post('/loginByCode')
+  async loginByCode(@Body() loginDto: LoginByCodeDto) {
+    try {
+      if (this.captchaService.validCode(loginDto.phone, loginDto.code)) {
+        const user = await this.userService.findUserByPhone(loginDto.phone);
+        if (!user) return resultHelper.error(500, `用户不存在`);
 
-  // @Get('check/email/:email')
-  // @UsePipes(ValidateEmailPipe)
-  // async checkEmail(@Param('email') email: string) {
-  //   const user = await this.userService.findUserByEmail(email);
-  //   return !user;
-  // }
+        if (user.status === UserStatus.disable) {
+          return resultHelper.error(500, `用户已被禁用`);
+        }
+
+        user.lastLoginTime = new Date();
+        const newUser = await this.userService.updateUser(user.id, user);
+        const token = this.jwtService.generateToken(newUser);
+
+        return resultHelper.success(token, '登录成功');
+      }
+      else {
+        return resultHelper.error(500, '验证码错误');
+      }
+    }
+    catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
+  }
+
+  @Post('/register')
+  async register(@Body() registerDto: RegisterDto) {
+    try {
+      if (this.captchaService.validCode(registerDto.phone, registerDto.code)) {
+        let user = await this.userService.findUserByPhone(registerDto.phone);
+        if (user) {
+          return resultHelper.error(500, '手机号已经注册过, 请更换手机号');
+        }
+
+        user = await this.userService.findUserBynickName(registerDto.nickName);
+        if (user) {
+          return resultHelper.error(500, '昵称已经注册过, 请更换昵称');
+        }
+
+        user = await this.userService.createUser({
+          phoneNumber: registerDto.phone,
+          password: registerDto.password,
+          nickname: registerDto.nickName,
+        });
+        return resultHelper.success(user);
+      }
+      else {
+        return resultHelper.error(500, '验证码错误');
+      }
+    } catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
+  }
+
+  @Post('/forget')
+  async forget(@Body() registerDto: RegisterDto) {
+    try {
+      if (this.captchaService.validCode(registerDto.phone, registerDto.code)) {
+        let user = await this.userService.findUserByPhone(registerDto.phone);
+        if (!user) {
+          return resultHelper.error(500, '没有找到用户');
+        }
+
+        user.password = registerDto.password;
+        this.userService.updateUser(user.id, user);
+
+        return resultHelper.success();
+      }
+      else {
+        return resultHelper.error(500, '验证码错误');
+      }
+    } catch (error) {
+      return resultHelper.error(500, error.message);
+    }
+  }
+
+  @Get('/sms/:phone')
+  @UsePipes(ValidatePhonePipe)
+  async sendNumberSms(@Param('phone') phone: string) {
+    this.captchaService.buildNumberSmsCode(phone);
+    return resultHelper.success();
+  }
 }

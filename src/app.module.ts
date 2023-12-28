@@ -18,6 +18,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { MailService } from './common/mail.service';
 import { TempTokenService } from './auth/temp.token.service';
 import { TempTokenGuard } from './guard/temp.token.guard';
+import { SmsService } from './serice/sms.service';
+import { CaptchaService } from './serice/captcha.service';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { TempTokenGuard } from './guard/temp.token.guard';
     MailService,
     TempTokenService,
     TempTokenGuard,
+    SmsService,
+    CaptchaService
   ],
 })
 export class AppModule { }

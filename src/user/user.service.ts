@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../connect/User';
@@ -6,22 +6,24 @@ import { UserStatus } from 'src/common/enmu';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createUser(userData: Partial<User>): Promise<User> {
     if (!userData.status) userData.status = UserStatus.normal;
     if (!userData.lastLoginTime) userData.lastLoginTime = new Date();
     if (!userData.creationTime) userData.creationTime = new Date();
-
+    if (!userData.nickname) userData.nickname = this.generateRandomName();
     const newUser = this.userRepository.create(userData);
+    this.logger.log('创建用户成功');
     return this.userRepository.save(newUser);
   }
 
   private generateRandomName(): string {
-    const prefix = 'User';
+    const prefix = '用户';
     const randomSuffix = Math.floor(Math.random() * 100000).toString();
     const username = prefix + randomSuffix.padStart(5, '0');
     return username;
@@ -42,8 +44,12 @@ export class UserService {
   }
 
 
-  async findUserByEmail(phone: string): Promise<User | undefined> {
+  async findUserByPhone(phone: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { phoneNumber: phone } });
+  }
+
+  async findUserBynickName(nickName: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { nickname: nickName } });
   }
 
   async updateUser(
