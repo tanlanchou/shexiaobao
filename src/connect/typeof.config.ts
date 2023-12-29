@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get('DB_USERNAME'),
       password: this.configService.get('DB_PASSWORD'),
       database: this.configService.get('DB_DATABASE'),
-      entities: [__dirname + '/../connect/**/*.entity.{js,ts}'],
+      entities: [__dirname + '/../connect/**/*.{js,ts}'],
       logging: true,
       extra: {
         connectionTimeout: 10000,

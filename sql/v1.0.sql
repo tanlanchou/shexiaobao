@@ -8,3 +8,35 @@ CREATE TABLE user (
     last_login_time TIMESTAMP NOT NULL,  -- 最后登录时间，时间类型，不能为空
     status INT NOT NULL                  -- 状态，数字，不能为空
 );
+
+-- sxb.product definition
+
+CREATE TABLE sxb.product (
+
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+DROP TABLE IF EXISTS sxb.product;
+
+CREATE TABLE sxb.`role` (
+	id INT auto_increment NOT NULL,
+	name varchar(100) NOT NULL,
+	create_date DATETIME NOT NULL,
+	CONSTRAINT role_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE sxb.captcha (
+	id INT auto_increment NOT NULL,
+	phone_number varchar(20) NOT NULL,
+	code varchar(10) NOT NULL,
+	update_time DATETIME NOT NULL,
+	CONSTRAINT captcha_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+

@@ -20,6 +20,7 @@ import { TempTokenService } from './auth/temp.token.service';
 import { TempTokenGuard } from './guard/temp.token.guard';
 import { SmsService } from './serice/sms.service';
 import { CaptchaService } from './serice/captcha.service';
+import { Captcha } from './connect/Captcha';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { CaptchaService } from './serice/captcha.service';
       useClass: TypeOrmConfigService,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Captcha]),
     ScheduleModule.forRoot(),
   ],
   controllers: [

@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, Length, IsPhoneNumber } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class RegisterDto {
-    @IsPhoneNumber()
+    @Matches(/^1[3456789]\d{9}$/, { message: '手机号不正确' })
     phone: string;
 
     @IsNotEmpty()
@@ -14,5 +14,7 @@ export class RegisterDto {
     @Length(4, 4)
     code: string;
 
-    nickName: string
+    roleId: number;
+
+    nickName: string;
 }

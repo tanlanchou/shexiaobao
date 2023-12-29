@@ -18,7 +18,6 @@ export class UserService {
     if (!userData.creationTime) userData.creationTime = new Date();
     if (!userData.nickname) userData.nickname = this.generateRandomName();
     const newUser = this.userRepository.create(userData);
-    this.logger.log('创建用户成功');
     return this.userRepository.save(newUser);
   }
 

@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString, Length, IsPhoneNumber } from 'class-validator';
+import { IsNotEmpty, IsString, Length, IsPhoneNumber, Matches } from 'class-validator';
 
 export class LoginDto {
-    @IsPhoneNumber()
+    @IsNotEmpty()
+    @Matches(/^1[3456789]\d{9}$/, { message: '手机号不正确' })
     phone: string;
 
     @IsNotEmpty()
@@ -11,7 +12,8 @@ export class LoginDto {
 }
 
 export class LoginByCodeDto {
-    @IsPhoneNumber()
+    @IsNotEmpty()
+    @Matches(/^1[3456789]\d{9}$/, { message: '手机号不正确' })
     phone: string;
 
     @IsNotEmpty()

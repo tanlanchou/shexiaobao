@@ -11,7 +11,6 @@ import {
   Logger
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from '../connect/user.entity';
 import { UserStatus } from '../common/enmu';
 import { JwtCommonService } from 'src/auth/jwt.common.service';
 import * as resultHelper from 'src/common/resultHelper';
@@ -62,7 +61,8 @@ export class UserController {
   @Post('/loginByCode')
   async loginByCode(@Body() loginDto: LoginByCodeDto) {
     try {
-      if (this.captchaService.validCode(loginDto.phone, loginDto.code)) {
+      const codeResult = await this.captchaService.validCode(loginDto.phone, loginDto.code);
+      if (codeResult) {
         const user = await this.userService.findUserByPhone(loginDto.phone);
         if (!user) return resultHelper.error(500, `用户不存在`);
 
@@ -89,7 +89,8 @@ export class UserController {
   @Post('/register')
   async register(@Body() registerDto: RegisterDto) {
     try {
-      if (this.captchaService.validCode(registerDto.phone, registerDto.code)) {
+      const codeResult = await this.captchaService.validCode(registerDto.phone, registerDto.code);
+      if (codeResult) {
         let user = await this.userService.findUserByPhone(registerDto.phone);
         if (user) {
           return resultHelper.error(500, '手机号已经注册过, 请更换手机号');
@@ -104,6 +105,7 @@ export class UserController {
           phoneNumber: registerDto.phone,
           password: registerDto.password,
           nickname: registerDto.nickName,
+          roleId: registerDto.roleId
         });
         return resultHelper.success(user);
       }
@@ -119,7 +121,8 @@ export class UserController {
   @Post('/forget')
   async forget(@Body() registerDto: RegisterDto) {
     try {
-      if (this.captchaService.validCode(registerDto.phone, registerDto.code)) {
+      const codeResult = await this.captchaService.validCode(registerDto.phone, registerDto.code);
+      if (codeResult) {
         let user = await this.userService.findUserByPhone(registerDto.phone);
         if (!user) {
           return resultHelper.error(500, '没有找到用户');
