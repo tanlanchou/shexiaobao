@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { TempTokenService } from 'src/auth/temp.token.service';
 import { tokenMixin } from 'src/common/enmu';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/service/user.service';
 
 @Injectable()
 export class TempTokenGuard implements CanActivate {

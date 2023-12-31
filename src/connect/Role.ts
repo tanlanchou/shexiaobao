@@ -10,4 +10,7 @@ export class Role {
 
   @Column("datetime", { name: "create_date" })
   createDate: Date;
+
+  @Column("bigint", { name: "number", default: () => "'0'" })
+  number: bigint;
 }

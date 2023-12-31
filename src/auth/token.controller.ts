@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { JwtCommonService } from './jwt.common.service';
 import { AuthGuard } from '../guard/auth.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/service/user.service';
 
 @UseGuards(AuthGuard)
 @Controller('token')
