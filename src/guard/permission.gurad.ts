@@ -26,7 +26,7 @@ export class PermissionGuard implements CanActivate {
     const keyNumber = result.number;
     const role = await this.roleService.findOne(user.roleId);
     if (!role) return false;
-    if ((role.number & keyNumber) == keyNumber) {
+    if ((BigInt(role.number) & BigInt(keyNumber)) == BigInt(keyNumber)) {
       return true;
     }
     return false;
