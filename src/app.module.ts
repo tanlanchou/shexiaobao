@@ -56,6 +56,12 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import { StaticController } from './controller/static.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ProductInfoService } from './service/product.info.service';
+import { ProductInfoController } from './controller/product.info.controller';
+import { ProductInfo } from './connect/ProductInfo';
+import { AccountController } from './controller/account.controller';
+import { AccountService } from './service/account.service';
+import { Account } from './connect/Account';
 
 console.log(path.join(__dirname, '..', '/uploads'));
 @Module({
@@ -86,6 +92,8 @@ console.log(path.join(__dirname, '..', '/uploads'));
       ProductStorehouse,
       ProductTag,
       ProductType,
+      ProductInfo,
+      Account,
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -116,6 +124,8 @@ console.log(path.join(__dirname, '..', '/uploads'));
     ProductTagController,
     ProductTypeController,
     StaticController,
+    ProductInfoController,
+    AccountController,
   ],
   providers: [
     AuthGuard,
@@ -142,6 +152,8 @@ console.log(path.join(__dirname, '..', '/uploads'));
     ProductStorehouseService,
     ProductTagService,
     ProductTypeService,
+    ProductInfoService,
+    AccountService,
   ],
 })
 export class AppModule {}

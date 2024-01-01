@@ -175,4 +175,12 @@ export class ProductInfo {
     comment: "1. 未入库， 2. 入库 3. 开单。 4.出库",
   })
   workflow: number;
+
+  @Column("varchar", {
+    name: "static_list",
+    nullable: true,
+    comment: "静态路径",
+    length: 500,
+  })
+  staticList: string | null;
 }

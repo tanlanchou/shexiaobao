@@ -141,3 +141,55 @@ CREATE TABLE sxb.customer (
 ALTER TABLE sxb.`role` ADD `number` BIGINT DEFAULT 0 NOT NULL;
 
 ALTER TABLE sxb.power ADD `key` varchar(50) NOT NULL;
+
+CREATE TABLE sxb.sales_channels (
+	id INT auto_increment NOT NULL,
+	name varchar(100) NULL,
+	parent_id INT DEFAULT 0 NOT NULL
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE sxb.order_product (
+	id INT auto_increment NOT NULL,
+	order_id INT NOT NULL,
+	product_id INT NOT NULL,
+	create_date datetime NOT NULL,
+	CONSTRAINT NewTable_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE sxb.account (
+	id INT auto_increment NOT NULL,
+	name varchar(100) NOT NULL COMMENT '账户名称',
+	`type` tinyint NOT NULL COMMENT '账户类型',
+	CONSTRAINT account_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+COMMENT='收款账户';
+
+CREATE TABLE sxb.`order` (
+	id INT auto_increment NOT NULL,
+	customer_id INT NOT NULL COMMENT '客户ID',
+	sales_channels_id int NOT NULL COMMENT '销售途径ID',
+	send_status tinyint NOT NULL COMMENT '发货状态',
+	amount_receivable FLOAT NULL COMMENT '应收金额',
+	account varchar(100) NOT NULL COMMENT '收款账户',
+	money float NOT NULL COMMENT '收到金额',
+	img varchar(300) NULL COMMENT '凭证图片，逗号分隔',
+	saler int NOT NULL COMMENT '主要销售人员',
+	hepler int NULL COMMENT '辅助销售人员',
+	sale_time datetime NOT NULL COMMENT '销售时间',
+	`desc` varchar(200) NULL COMMENT '备注',
+	status tinyint NOT NULL COMMENT '1. 开单，运输中 2. 完成 3. 撤销订单',
+	CONSTRAINT order_PK PRIMARY KEY (id)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
