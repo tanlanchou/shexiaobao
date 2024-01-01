@@ -51,7 +51,13 @@ import { ProductQualityController } from './controller/product.quality.controlle
 import { ProductStorehouseController } from './controller/product.storehouse.controller';
 import { ProductTagController } from './controller/product.tag.controller';
 import { ProductTypeController } from './controller/product.type.controller';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import { StaticController } from './controller/static.controller';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
+console.log(path.join(__dirname, '..', '/uploads'));
 @Module({
   imports: [
     JwtAuthModule,
@@ -62,6 +68,10 @@ import { ProductTypeController } from './controller/product.type.controller';
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
       inject: [ConfigService],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', '/uploads'),
+      serveRoot: '/static',
     }),
     TypeOrmModule.forFeature([
       User,
@@ -78,6 +88,19 @@ import { ProductTypeController } from './controller/product.type.controller';
       ProductType,
     ]),
     ScheduleModule.forRoot(),
+    MulterModule.register({
+      storage: diskStorage({
+        // 指定文件存储目录
+        destination: path.join(__dirname, '..', '/uploads'),
+        // 通过时间戳来重命名上传的文件名
+        filename: (_, file, callback) => {
+          const fileName = `${
+            new Date().getTime() + path.extname(file.originalname)
+          }`;
+          return callback(null, fileName);
+        },
+      }),
+    }),
   ],
   controllers: [
     AppController,
@@ -92,6 +115,7 @@ import { ProductTypeController } from './controller/product.type.controller';
     ProductStorehouseController,
     ProductTagController,
     ProductTypeController,
+    StaticController,
   ],
   providers: [
     AuthGuard,

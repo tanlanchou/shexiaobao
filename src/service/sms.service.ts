@@ -7,18 +7,23 @@ import Util, * as $Util from '@alicloud/tea-util';
 @Injectable()
 export class SmsService {
   private readonly logger = new Logger(SmsService.name);
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService) {}
 
   private client: Dysmsapi20170525 = null;
   createDysmsapiClient() {
     if (this.client === null) {
-
       this.logger.log(`开始创建短信发送客户端`);
       this.logger.log(`环境变量`);
-      this.logger.log(`ACCESS_KEY_ID: ${this.configService.get<string>('ACCESS_KEY_ID')}`);
-      this.logger.log(`ACCESS_KEY_SECRET: ${this.configService.get<string>('ACCESS_KEY_SECRET')}`);
+      this.logger.log(
+        `ACCESS_KEY_ID: ${this.configService.get<string>('ACCESS_KEY_ID')}`,
+      );
+      this.logger.log(
+        `ACCESS_KEY_SECRET: ${this.configService.get<string>(
+          'ACCESS_KEY_SECRET',
+        )}`,
+      );
 
-      let config = new $OpenApi.Config({
+      const config = new $OpenApi.Config({
         accessKeyId: this.configService.get<string>('ACCESS_KEY_ID'),
         accessKeySecret: this.configService.get<string>('ACCESS_KEY_SECRET'),
       });
@@ -26,7 +31,6 @@ export class SmsService {
       this.client = new Dysmsapi20170525(config);
 
       this.logger.log(`创建短信发送客户端成功`);
-
     }
   }
 
@@ -43,15 +47,14 @@ export class SmsService {
     this.logger.log(`templateCode: ${templateCode}`);
     this.logger.log(`templateParam: ${templateParam}`);
 
-    let sendSmsRequest = new $Dysmsapi20170525.SendSmsRequest({
+    const sendSmsRequest = new $Dysmsapi20170525.SendSmsRequest({
       phoneNumbers: to,
       signName: signName,
       templateCode: templateCode,
       templateParam: templateParam,
     });
 
-    let runtime = new $Util.RuntimeOptions({});
+    const runtime = new $Util.RuntimeOptions({});
     await this.client.sendSmsWithOptions(sendSmsRequest, runtime);
-
   }
 }
