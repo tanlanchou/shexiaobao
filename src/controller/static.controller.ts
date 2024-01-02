@@ -24,9 +24,7 @@ export class StaticController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ url: string }> {
     return {
-      url: `${this.configService.get<string>(
-        'HOST_NAME',
-      )}/${this.configService.get<string>('STATIC_NAME')}/${file.filename}`,
+      url: `/${this.configService.get<string>('STATIC_NAME')}/${file.filename}`,
     };
   }
 }

@@ -1,13 +1,13 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { PowerService } from 'src/service/power.service';
+import { RolePowerService } from 'src/service/role.power.service';
 import { RoleService } from 'src/service/role.service';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
-    private readonly powerService: PowerService,
+    private readonly rolePowerService: RolePowerService,
     private readonly roleService: RoleService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -21,14 +21,9 @@ export class PermissionGuard implements CanActivate {
     const className = context.getClass().name; // 获取类名
     const methodName = context.getHandler().name; // 获取方法名
     const permissionKey = className + '_' + methodName;
-    const result = await this.powerService.findOne(permissionKey);
+    const result = await this.rolePowerService.findByRoleAndPower(user.roleId, permissionKey);
     if (!result) return false;
-    const keyNumber = result.number;
-    const role = await this.roleService.findOne(user.roleId);
-    if (!role) return false;
-    if ((BigInt(role.number) & BigInt(keyNumber)) == BigInt(keyNumber)) {
-      return true;
-    }
+    if (result && result.status === 1) return true;
     return false;
   }
 }

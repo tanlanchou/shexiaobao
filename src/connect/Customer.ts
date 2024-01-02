@@ -45,16 +45,19 @@ export class Customer {
   })
   customerTag: string | null;
 
-  @Column("varchar", {
-    name: "customer_origin_id",
-    comment: "客户来源",
-    length: 20,
-  })
-  customerOriginId: string;
+  @Column("tinyint", { name: "customer_origin_id", comment: "客户来源" })
+  customerOriginId: number;
 
   @Column("varchar", { name: "img", nullable: true, length: 100 })
   img: string | null;
 
   @Column("varchar", { name: "desc", nullable: true, length: 100 })
   desc: string | null;
+
+  @Column("tinyint", {
+    name: "intention_type",
+    nullable: true,
+    comment: "业务意向 1. 消费, 2. 回收 3. 寄卖",
+  })
+  intentionType: number | null;
 }

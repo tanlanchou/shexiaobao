@@ -16,7 +16,7 @@ import { PermissionGuard } from 'src/guard/permission.gurad';
 import CommonService from 'src/service/common.service';
 
 export default class CommonController<T> {
-  private readonly logger = new Logger(CommonController.name);
+  protected readonly logger = new Logger(CommonController.name);
   private readonly common = null;
   constructor(common: CommonService<T>) {
     this.common = common;

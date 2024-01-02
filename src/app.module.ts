@@ -62,8 +62,22 @@ import { ProductInfo } from './connect/ProductInfo';
 import { AccountController } from './controller/account.controller';
 import { AccountService } from './service/account.service';
 import { Account } from './connect/Account';
+import { RolePower } from './connect/RolePower';
+import { RolePowerService } from './service/role.power.service';
+import { RolePowerController } from './controller/role.power.controller';
+import { Customer } from './connect/Customer';
+import { CustomerService } from './service/customer.service';
+import { CustomerController } from './controller/customer.controller';
+import { OrderController } from './controller/order.controller';
+import { OrderService } from './service/order.service';
+import { OrderProductService } from './service/order.product.service';
+import { Order } from './connect/Order';
+import { OrderProduct } from './connect/OrderProduct';
+import { SalesChannels } from './connect/SalesChannels';
+import { SalesChannelsController } from './controller/sales.channels.controller';
+import { SalesChannelsService } from './service/sales.channels.service';
 
-console.log(path.join(__dirname, '..', '/uploads'));
+
 @Module({
   imports: [
     JwtAuthModule,
@@ -83,6 +97,7 @@ console.log(path.join(__dirname, '..', '/uploads'));
       User,
       Captcha,
       Role,
+      RolePower,
       Power,
       ProductAttachment,
       ProductCategory,
@@ -94,6 +109,10 @@ console.log(path.join(__dirname, '..', '/uploads'));
       ProductType,
       ProductInfo,
       Account,
+      Customer,
+      Order,
+      OrderProduct,
+      SalesChannels,
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -102,9 +121,8 @@ console.log(path.join(__dirname, '..', '/uploads'));
         destination: path.join(__dirname, '..', '/uploads'),
         // 通过时间戳来重命名上传的文件名
         filename: (_, file, callback) => {
-          const fileName = `${
-            new Date().getTime() + path.extname(file.originalname)
-          }`;
+          const fileName = `${new Date().getTime() + path.extname(file.originalname)
+            }`;
           return callback(null, fileName);
         },
       }),
@@ -114,6 +132,7 @@ console.log(path.join(__dirname, '..', '/uploads'));
     AppController,
     UserController,
     RoleController,
+    RolePowerController,
     PowerController,
     ProductAttachmentController,
     ProductCategoryController,
@@ -126,6 +145,9 @@ console.log(path.join(__dirname, '..', '/uploads'));
     StaticController,
     ProductInfoController,
     AccountController,
+    CustomerController,
+    OrderController,
+    SalesChannelsController
   ],
   providers: [
     AuthGuard,
@@ -144,6 +166,7 @@ console.log(path.join(__dirname, '..', '/uploads'));
     CaptchaService,
     PowerService,
     RoleService,
+    RolePowerService,
     ProductAttachmentService,
     ProductCategoryService,
     ProductMaterialService,
@@ -154,6 +177,10 @@ console.log(path.join(__dirname, '..', '/uploads'));
     ProductTypeService,
     ProductInfoService,
     AccountService,
+    CustomerService,
+    OrderService,
+    OrderProductService,
+    SalesChannelsService
   ],
 })
-export class AppModule {}
+export class AppModule { }
