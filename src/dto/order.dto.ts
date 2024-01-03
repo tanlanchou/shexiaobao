@@ -4,6 +4,7 @@ import {
     IsNumber,
     IsDate,
     IsString,
+    IsDateString,
 } from 'class-validator';
 
 export class OrderDto {
@@ -41,8 +42,8 @@ export class OrderDto {
     hepler: number | null;
 
     @IsNotEmpty()
-    @IsDate()
-    saleTime: Date;
+    @IsDateString()
+    saleTime: string;
 
     desc: string | null;
 

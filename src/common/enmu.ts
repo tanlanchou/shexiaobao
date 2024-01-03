@@ -22,4 +22,20 @@ export enum Status {
   Deleted = 2,
 }
 
+export enum ProductInfoState {
+  InTransit = 1,
+  InStoreHouse = 2,
+  OutStoreHouse = 3,
+  InDamage = 4,
+  InRepair = 5,
+  InLock = 6,
+}
+
+export enum OrderState {
+  normal = 1,
+  cancel = 2,
+  return = 3,
+  review = 4
+}
+
 export const tokenMixin = `dsjioj@!J*@&(#JKHDUH&@)`;

@@ -13,4 +13,8 @@ export class OrderService extends CommonService<Order> {
   ) {
     super(orderRepository);
   }
+
+  async findAllByUser(userId: number): Promise<Order[]> {
+    return this.orderRepository.find({ where: { saler: userId } })
+  }
 }
