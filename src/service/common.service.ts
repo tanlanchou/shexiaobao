@@ -4,7 +4,7 @@ export default class CommonService<T> {
   // 定义mapper属性，由子类具体实现赋值
   constructor(readonly mapper: Repository<T>) {}
 
-  async create(data: T): Promise<T> {
+  async create(data: any): Promise<T> {
     const result = await this.mapper.save(data);
     return result;
   }

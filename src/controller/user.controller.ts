@@ -19,6 +19,7 @@ import { CaptchaService } from 'src/service/captcha.service';
 import { ValidatePhonePipe } from 'src/pipe/validate.phone.pipe';
 import { LoginDto, LoginByCodeDto } from 'src/dto/login.dto';
 import { RegisterDto } from 'src/dto/register.dto';
+import { LogService } from 'src/service/log.service';
 
 @Controller('users')
 export class UserController {
@@ -27,7 +28,8 @@ export class UserController {
     private readonly userService: UserService,
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
-  ) {}
+    private readonly logService: LogService
+  ) { }
 
   @Get()
   @UseGuards(AuthGuard)
@@ -111,8 +113,11 @@ export class UserController {
           phoneNumber: registerDto.phone,
           password: registerDto.password,
           nickname: registerDto.nickName,
-          roleId: registerDto.roleId,
+          roleId: 0,
+          status: UserStatus.noVerification
         });
+
+        this.logService.create({ userId: 0, name: registerDto.phone, desc: `用户${registerDto.phone}注册了` })
         return resultHelper.success(user);
       } else {
         return resultHelper.error(500, '验证码错误');
