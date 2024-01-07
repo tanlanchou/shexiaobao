@@ -19,4 +19,19 @@ export class RolePowerService extends CommonService<RolePower> {
       where: { roleId, powerName: key },
     });
   }
+
+  async findByRole(roleId: number): Promise<RolePower[]> {
+    const result = await this.rolePowerRepository.find({
+      where: { roleId },
+    });
+
+    return result;
+  }
+
+  async deleteByRoleId(id: number): Promise<void> {
+    const reuslt = await this.rolePowerRepository.find({
+      where: { roleId: id },
+    });
+    await this.rolePowerRepository.remove(reuslt);
+  }
 }

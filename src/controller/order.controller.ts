@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { OrderService } from 'src/service/order.service';
 import { Order } from 'src/connect/Order';
 import CommonController from './common.controller';
@@ -13,10 +23,13 @@ import { ProductInfo } from 'src/connect/ProductInfo';
 import { OrderState, ProductInfoState } from 'src/common/enmu';
 import { Transaction } from 'typeorm';
 
-
 @Controller('order')
 export class OrderController extends CommonController<Order> {
-  constructor(private readonly orderService: OrderService, private readonly productService: ProductInfoService, private readonly orderProductService: OrderProductService) {
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly productService: ProductInfoService,
+    private readonly orderProductService: OrderProductService,
+  ) {
     super(orderService);
   }
 
@@ -24,17 +37,18 @@ export class OrderController extends CommonController<Order> {
   @UseGuards(JwtAuthGuard, PermissionGuard)
   async create(@Body() data: OrderDto) {
     try {
-
       //检查产品状态
-      const productIdsArray = data.productIds.split(',').map(id => Number(id));
+      const productIdsArray = data.productIds
+        .split(',')
+        .map((id) => Number(id));
       const productsArray: ProductInfo[] = [];
       for (let i = 0; i < productIdsArray.length; i++) {
         const productId = productIdsArray[i];
         const productModel = await this.productService.findOne(productId);
         if (!productModel) {
-          return resultHelper.error(500, "产品不存在");
+          return resultHelper.error(500, '产品不存在');
         } else if (productModel.status !== ProductInfoState.InStoreHouse) {
-          return resultHelper.error(500, "产品状态不正确");
+          return resultHelper.error(500, '产品状态不正确');
         }
         productsArray.push(productModel);
       }
@@ -82,26 +96,28 @@ export class OrderController extends CommonController<Order> {
     try {
       const orderModel = await this.orderService.findOne(id);
       if (!orderModel) {
-        return resultHelper.error(500, "订单不存在");
+        return resultHelper.error(500, '订单不存在');
       }
 
       const productInfos = [];
-      const orderProductModels = await this.orderProductService.getProductByOrderId(id);
+      const orderProductModels =
+        await this.orderProductService.getProductByOrderId(id);
       if (orderProductModels && orderProductModels.length > 0) {
-        const productIds = orderProductModels.map(item => item.productId);
+        const productIds = orderProductModels.map((item) => item.productId);
         for (let i = 0; i < productIds.length; i++) {
-          const productInfoModel = await this.productService.findOne(productIds[i]);
+          const productInfoModel = await this.productService.findOne(
+            productIds[i],
+          );
           if (!productInfoModel) {
-            return resultHelper.error(500, "关联的产品信息错误");
+            return resultHelper.error(500, '关联的产品信息错误');
           }
           productInfos.push(productInfoModel);
         }
       }
       return resultHelper.success({
         order: orderModel,
-        productInfos
+        productInfos,
       });
-
     } catch (ex) {
       this.logger.error(ex.message);
       return resultHelper.error(500, ex.message);
@@ -113,7 +129,7 @@ export class OrderController extends CommonController<Order> {
   async findAllByUser(@Req() request) {
     try {
       const user = request.user;
-      if (!user) return resultHelper.error(500, "没有登录");
+      if (!user) return resultHelper.error(500, '没有登录');
 
       const results = await this.orderService.findAllByUser(user.id);
       if (!results) return resultHelper.error(500, '没有找到对象');
@@ -125,28 +141,28 @@ export class OrderController extends CommonController<Order> {
     }
   }
 
-  @Put("/status/cancel/:id")
+  @Put('/status/cancel/:id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   async cancel(@Param('id') id: number) {
     try {
-  
       const orderModel = await this.orderService.findOne(id);
       if (!orderModel) {
-        return resultHelper.error(500, "订单不存在");
+        return resultHelper.error(500, '订单不存在');
       }
 
-      const orderProductModels = await this.orderProductService.getProductByOrderId(id);
+      const orderProductModels =
+        await this.orderProductService.getProductByOrderId(id);
       if (!orderProductModels) {
-        return resultHelper.error(500, "订单产品信息错误");
+        return resultHelper.error(500, '订单产品信息错误');
       }
 
       if (orderProductModels.length > 0) {
-        const productIds = orderProductModels.map(item => item.productId);
+        const productIds = orderProductModels.map((item) => item.productId);
         for (let i = 0; i < productIds.length; i++) {
           const productId = productIds[i];
           const productModel = await this.productService.findOne(productId);
           if (!productModel) {
-            return resultHelper.error(500, "关联的产品信息错误");
+            return resultHelper.error(500, '关联的产品信息错误');
           }
           productModel.status = ProductInfoState.InStoreHouse;
           await this.productService.update(productModel.id, productModel);
@@ -162,27 +178,28 @@ export class OrderController extends CommonController<Order> {
     }
   }
 
-  @Put("/status/return/:id")
+  @Put('/status/return/:id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   async returnOrder(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);
       if (!orderModel) {
-        return resultHelper.error(500, "订单不存在");
+        return resultHelper.error(500, '订单不存在');
       }
 
-      const orderProductModels = await this.orderProductService.getProductByOrderId(id);
+      const orderProductModels =
+        await this.orderProductService.getProductByOrderId(id);
       if (!orderProductModels) {
-        return resultHelper.error(500, "订单产品信息错误");
+        return resultHelper.error(500, '订单产品信息错误');
       }
 
       if (orderProductModels.length > 0) {
-        const productIds = orderProductModels.map(item => item.productId);
+        const productIds = orderProductModels.map((item) => item.productId);
         for (let i = 0; i < productIds.length; i++) {
           const productId = productIds[i];
           const productModel = await this.productService.findOne(productId);
           if (!productModel) {
-            return resultHelper.error(500, "关联的产品信息错误");
+            return resultHelper.error(500, '关联的产品信息错误');
           }
           productModel.status = ProductInfoState.InStoreHouse;
           await this.productService.update(productModel.id, productModel);

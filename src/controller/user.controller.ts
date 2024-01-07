@@ -9,6 +9,7 @@ import {
   UsePipes,
   UseGuards,
   Logger,
+  Req,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserStatus } from '../common/enmu';
@@ -20,6 +21,8 @@ import { ValidatePhonePipe } from 'src/pipe/validate.phone.pipe';
 import { LoginDto, LoginByCodeDto } from 'src/dto/login.dto';
 import { RegisterDto } from 'src/dto/register.dto';
 import { LogService } from 'src/service/log.service';
+import { JwtAuthGuard } from 'src/guard/jwt.auth.guard';
+import { PermissionGuard } from 'src/guard/permission.gurad';
 
 @Controller('users')
 export class UserController {
@@ -28,14 +31,20 @@ export class UserController {
     private readonly userService: UserService,
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
-    private readonly logService: LogService
-  ) { }
+    private readonly logService: LogService,
+  ) {}
 
-  @Get()
-  @UseGuards(AuthGuard)
-  async getAllUsers() {
-    const users = this.userService.findAllUsers();
+  @Get('/page/:page')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  async getAllUsers(@Param('page') page: number) {
+    const users = await this.userService.findByPage(page, 20);
     return resultHelper.success(users);
+  }
+
+  @Get('info')
+  @UseGuards(JwtAuthGuard)
+  async info(@Req() request) {
+    return resultHelper.success(request.user);
   }
 
   @Post('/login')
@@ -49,6 +58,10 @@ export class UserController {
 
       if (user.status === UserStatus.disable) {
         return resultHelper.error(500, `用户已被禁用`);
+      }
+
+      if (user.status === UserStatus.noVerification) {
+        return resultHelper.error(500, `请等待管理员通过您的账户`);
       }
 
       user.lastLoginTime = new Date();
@@ -114,10 +127,15 @@ export class UserController {
           password: registerDto.password,
           nickname: registerDto.nickName,
           roleId: 0,
-          status: UserStatus.noVerification
+          status: UserStatus.noVerification,
         });
 
-        this.logService.create({ userId: 0, name: registerDto.phone, desc: `用户${registerDto.phone}注册了` })
+        this.logService.create({
+          userId: 0,
+          name: registerDto.phone,
+          desc: `用户${registerDto.phone}注册了`,
+          createTime: new Date(),
+        });
         return resultHelper.success(user);
       } else {
         return resultHelper.error(500, '验证码错误');
@@ -144,6 +162,13 @@ export class UserController {
         user.password = registerDto.password;
         this.userService.updateUser(user.id, user);
 
+        this.logService.create({
+          userId: 0,
+          name: registerDto.phone,
+          desc: `用户${registerDto.phone}重置密码`,
+          createTime: new Date(),
+        });
+
         return resultHelper.success();
       } else {
         return resultHelper.error(500, '验证码错误');
@@ -157,6 +182,25 @@ export class UserController {
   @UsePipes(ValidatePhonePipe)
   async sendNumberSms(@Param('phone') phone: string) {
     this.captchaService.buildNumberSmsCode(phone);
+    this.logService.create({
+      userId: 0,
+      name: phone,
+      desc: `用户${phone}发送了短信`,
+      createTime: new Date(),
+    });
     return resultHelper.success();
+  }
+
+  @Get('/number/:phone')
+  @UsePipes(ValidatePhonePipe)
+  async number(@Param('phone') phone: string) {
+    const code = await this.captchaService.buildNumber(phone);
+    this.logService.create({
+      userId: 0,
+      name: phone,
+      desc: `用户${phone}发送了短信`,
+      createTime: new Date(),
+    });
+    return resultHelper.success(code);
   }
 }

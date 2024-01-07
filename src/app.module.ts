@@ -76,7 +76,9 @@ import { OrderProduct } from './connect/OrderProduct';
 import { SalesChannels } from './connect/SalesChannels';
 import { SalesChannelsController } from './controller/sales.channels.controller';
 import { SalesChannelsService } from './service/sales.channels.service';
-
+import { LogService } from './service/log.service';
+import { LogController } from './controller/log.controller';
+import { Log } from './connect/Log';
 
 @Module({
   imports: [
@@ -113,6 +115,7 @@ import { SalesChannelsService } from './service/sales.channels.service';
       Order,
       OrderProduct,
       SalesChannels,
+      Log,
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -121,8 +124,9 @@ import { SalesChannelsService } from './service/sales.channels.service';
         destination: path.join(__dirname, '..', '/uploads'),
         // 通过时间戳来重命名上传的文件名
         filename: (_, file, callback) => {
-          const fileName = `${new Date().getTime() + path.extname(file.originalname)
-            }`;
+          const fileName = `${
+            new Date().getTime() + path.extname(file.originalname)
+          }`;
           return callback(null, fileName);
         },
       }),
@@ -147,7 +151,8 @@ import { SalesChannelsService } from './service/sales.channels.service';
     AccountController,
     CustomerController,
     OrderController,
-    SalesChannelsController
+    SalesChannelsController,
+    LogController,
   ],
   providers: [
     AuthGuard,
@@ -180,7 +185,8 @@ import { SalesChannelsService } from './service/sales.channels.service';
     CustomerService,
     OrderService,
     OrderProductService,
-    SalesChannelsService
+    SalesChannelsService,
+    LogService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

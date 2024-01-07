@@ -39,6 +39,12 @@ export class CaptchaService {
     }
   }
 
+  async buildNumber(phone: string): Promise<number | undefined> {
+    const code = this.buildCaptcha();
+    await this.updateCaptcha(phone, code.toString());
+    return code;
+  }
+
   async buildNumberSmsCode(phone: string): Promise<number | undefined> {
     const code = this.buildCaptcha();
 

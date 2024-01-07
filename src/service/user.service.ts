@@ -28,12 +28,33 @@ export class UserService {
     return username;
   }
 
+  async findByPage(
+    page: number,
+    limit: number,
+  ): Promise<{ results: User[]; total: number }> {
+    const [results, total] = await this.userRepository
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.role', 'Role')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      results,
+      total,
+    };
+  }
+
   async findAllUsers(): Promise<User[]> {
     return this.userRepository.find();
   }
 
   async findUserById(id: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id } });
+  }
+
+  async findUserByRoleId(id: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { roleId: id } });
   }
 
   async findUserByPhonePWD(phone: string, pwd: string) {
