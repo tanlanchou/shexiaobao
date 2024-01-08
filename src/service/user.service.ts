@@ -10,7 +10,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createUser(userData: Partial<User>): Promise<User> {
     if (!userData.status) userData.status = UserStatus.normal;
@@ -33,8 +33,8 @@ export class UserService {
     limit: number,
   ): Promise<{ results: User[]; total: number }> {
     const [results, total] = await this.userRepository
-      .createQueryBuilder('User')
-      .leftJoinAndSelect('User.role', 'Role')
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.role', 'role')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -59,7 +59,7 @@ export class UserService {
 
   async findUserByPhonePWD(phone: string, pwd: string) {
     return this.userRepository.findOne({
-      where: { phoneNumber: phone, password: pwd },
+      where: { phoneNumber: phone, password: pwd }
     });
   }
 

@@ -37,11 +37,17 @@ export class UserController {
   @Get('/page/:page')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   async getAllUsers(@Param('page') page: number) {
-    const users = await this.userService.findByPage(page, 20);
-    return resultHelper.success(users);
+    const result = await this.userService.findByPage(page, 20);
+    return resultHelper.success(result);
   }
 
-  @Get('info')
+  @Get('/other/:id')
+  async getUserById(@Param('id') id: number) {
+    const result = await this.userService.findUserById(id);
+    return resultHelper.success(result);
+  }
+
+  @Get('/info')
   @UseGuards(JwtAuthGuard)
   async info(@Req() request) {
     return resultHelper.success(request.user);
@@ -126,7 +132,7 @@ export class UserController {
           phoneNumber: registerDto.phone,
           password: registerDto.password,
           nickname: registerDto.nickName,
-          roleId: 0,
+          roleId: 99,
           status: UserStatus.noVerification,
         });
 

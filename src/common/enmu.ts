@@ -38,4 +38,9 @@ export enum OrderState {
   review = 4
 }
 
+export enum RoleStatus {
+  system = 1,
+  other = 2,
+}
+
 export const tokenMixin = `dsjioj@!J*@&(#JKHDUH&@)`;

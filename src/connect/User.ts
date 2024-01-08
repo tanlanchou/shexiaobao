@@ -1,5 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Role } from "./Role";
 
+@Index("user_role_FK", ["roleId"], {})
 @Entity("user", { schema: "sxb" })
 export class User {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
@@ -25,4 +34,8 @@ export class User {
 
   @Column("int", { name: "status" })
   status: number;
+
+  @ManyToOne(() => Role)
+  @JoinColumn([{ name: "role_id", referencedColumnName: "id" }])
+  role: Role;
 }

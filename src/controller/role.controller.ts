@@ -17,6 +17,7 @@ import * as resultHelper from 'src/common/resultHelper';
 import { RolePowerService } from 'src/service/role.power.service';
 import { RolePower } from 'src/connect/RolePower';
 import { UserService } from 'src/service/user.service';
+import { RoleStatus } from 'src/common/enmu';
 
 @Controller('role')
 export class RoleController extends CommonController<Role> {
@@ -34,6 +35,7 @@ export class RoleController extends CommonController<Role> {
     const role = new Role();
     role.name = data.name;
     role.createDate = new Date();
+    role.status = RoleStatus.other;
     const rolePowers = data.powers;
     try {
       const roleModel = await this.roleService.create(role);
@@ -104,6 +106,10 @@ export class RoleController extends CommonController<Role> {
       const result = await this.userService.findUserByRoleId(id);
       if (result) {
         return resultHelper.error(500, '删除失败，还有用户在使用这个角色');
+      }
+
+      if(result.status == RoleStatus.system) {
+        return resultHelper.error(500, '系统角色不能删除');
       }
 
       await this.rolePowerService.deleteByRoleId(id);

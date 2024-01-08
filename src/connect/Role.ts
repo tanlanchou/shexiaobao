@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "./User";
 
 @Entity("role", { schema: "sxb" })
 export class Role {
@@ -13,4 +14,7 @@ export class Role {
     default: () => "CURRENT_TIMESTAMP",
   })
   createDate: Date;
+
+  @Column("tinyint", { name: "status", comment: "1. 系统字段, 2. 其他字段" })
+  status: number;
 }
