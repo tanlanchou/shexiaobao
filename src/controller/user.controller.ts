@@ -31,7 +31,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
-    private readonly logService: LogService,
+    private readonly logService: LogService
   ) {}
 
   @Get('/page/:page')

@@ -7,7 +7,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtCommonService: JwtCommonService,
     private readonly reflector: Reflector,
-  ) {}
+  ) { }
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
@@ -23,7 +23,6 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     request.user = result.user;
-
     return true;
   }
 }

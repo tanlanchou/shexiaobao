@@ -46,29 +46,30 @@ export class UserService {
   }
 
   async findAllUsers(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.find({ relations: ['role'] });
   }
 
   async findUserById(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { id } });
+    return this.userRepository.findOne({ where: { id }, relations: ['role'] });
   }
 
   async findUserByRoleId(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { roleId: id } });
+    return this.userRepository.findOne({ where: { roleId: id }, relations: ['role'] });
   }
 
   async findUserByPhonePWD(phone: string, pwd: string) {
     return this.userRepository.findOne({
       where: { phoneNumber: phone, password: pwd }
+      , relations: ['role']
     });
   }
 
   async findUserByPhone(phone: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { phoneNumber: phone } });
+    return this.userRepository.findOne({ where: { phoneNumber: phone }, relations: ['role'] });
   }
 
   async findUserBynickName(nickName: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { nickname: nickName } });
+    return this.userRepository.findOne({ where: { nickname: nickName }, relations: ['role'] });
   }
 
   async updateUser(
