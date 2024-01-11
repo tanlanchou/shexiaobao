@@ -85,6 +85,9 @@ import { Role } from './connect/Role';
 import { Captcha } from './connect/Captcha';
 import { ProductAttachment } from './connect/ProductAttachment';
 import { TypeOrmConfigService } from './connect/typeof.config';
+import { MenuController } from './controller/menu.controller';
+import { MenuService } from './service/menu.service';
+import { Menu } from './connect/Menu';
 @Module({
   imports: [
     JwtAuthModule,
@@ -121,6 +124,7 @@ import { TypeOrmConfigService } from './connect/typeof.config';
       OrderProduct,
       SalesChannels,
       Log,
+      Menu
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -157,6 +161,7 @@ import { TypeOrmConfigService } from './connect/typeof.config';
     OrderController,
     SalesChannelsController,
     LogController,
+    MenuController,
   ],
   providers: [
     AuthGuard,
@@ -191,6 +196,7 @@ import { TypeOrmConfigService } from './connect/typeof.config';
     OrderProductService,
     SalesChannelsService,
     LogService,
+    MenuService
   ],
 })
 export class AppModule { }

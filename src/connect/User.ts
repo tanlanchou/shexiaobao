@@ -35,6 +35,14 @@ export class User {
   @Column("int", { name: "status" })
   status: number;
 
+  @Column("varchar", {
+    name: "icon",
+    nullable: true,
+    comment: "头像链接",
+    length: 100,
+  })
+  icon: string | null;
+
   @ManyToOne(() => Role)
   @JoinColumn([{ name: "role_id", referencedColumnName: "id" }])
   role: Role;

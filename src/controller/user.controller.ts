@@ -10,6 +10,7 @@ import {
   UseGuards,
   Logger,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserStatus } from '../common/enmu';
@@ -23,6 +24,10 @@ import { RegisterDto } from 'src/dto/register.dto';
 import { LogService } from 'src/service/log.service';
 import { JwtAuthGuard } from 'src/guard/jwt.auth.guard';
 import { PermissionGuard } from 'src/guard/permission.gurad';
+import { UpdateUserDto } from 'src/dto/update.user.dto';
+import { User } from 'src/connect/user';
+import { UserSearchDto } from 'src/dto/search.user.dto';
+import { request } from 'http';
 
 @Controller('users')
 export class UserController {
@@ -32,16 +37,17 @@ export class UserController {
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
     private readonly logService: LogService
-  ) {}
+  ) { }
 
   @Get('/page/:page')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  async getAllUsers(@Param('page') page: number) {
-    const result = await this.userService.findByPage(page, 20);
+  async getAllUsers(@Param('page') page: number, @Query() params) {
+    const result = await this.userService.findByPage(page, 20, params);
     return resultHelper.success(result);
   }
 
   @Get('/other/:id')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
   async getUserById(@Param('id') id: number) {
     const result = await this.userService.findUserById(id);
     return resultHelper.success(result);
@@ -150,6 +156,53 @@ export class UserController {
       this.logger.error(ex.message);
       return resultHelper.error(500, ex.message);
     }
+  }
+
+  @Put('/other/:id')
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  async update(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto, @Req() request) {
+
+    try {
+      const userModel = await this.userService.findUserById(id);
+      if (!userModel) {
+        return resultHelper.error(500, '没有找到用户');
+      }
+
+      const userData = new User();
+      
+
+      userData.nickname = updateUserDto.nickname;
+      if (updateUserDto.icon) userData.icon = updateUserDto.icon;
+      if (updateUserDto.status) userData.status = updateUserDto.status;
+      if (updateUserDto.roleId) userData.roleId = updateUserDto.roleId;
+      this.userService.updateUser(id, userData);
+
+      this.logService.create({
+        userId: request.user.id,
+        name: request.user.phoneNumber,
+        desc: `
+        用户(${request.user.nickname}) 更新了用户${userModel.nickname}(${userModel.phoneNumber})的基本信息, 
+        包含${userModel.nickname},${userModel.icon},${userModel.phoneNumber},${userModel.roleId}
+        `,
+        createTime: new Date(),
+      });
+      return resultHelper.success();
+    }
+    catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
+  }
+
+  @Put('/update')
+  @UseGuards(JwtAuthGuard)
+  async updateOther(@Req() request, @Body() updateUserDto: UpdateUserDto) {
+
+    const userModel = request.user;
+    userModel.nickname = updateUserDto.nickname;
+    if (updateUserDto.icon) userModel.icon = updateUserDto.icon;
+
+    this.userService.updateUser(userModel.id, userModel);
   }
 
   @Post('/forget')

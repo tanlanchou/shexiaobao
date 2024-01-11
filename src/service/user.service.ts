@@ -31,10 +31,30 @@ export class UserService {
   async findByPage(
     page: number,
     limit: number,
+    params: any,
   ): Promise<{ results: User[]; total: number }> {
-    const [results, total] = await this.userRepository
+    let query = this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.role', 'role')
+      .innerJoinAndSelect('user.role', 'role');
+
+    if (params.roleId) {
+      query = query.where('user.role_id = :roleId', { roleId: params.roleId });
+    }
+
+    if (params.nickname) {
+      query = query.andWhere('user.nickname like :nickname', { nickname: `%${params.nickname}%` });
+    }
+
+    if (params.status) {
+      query = query.andWhere('user.status = :status', { status: params.status });
+    }
+
+    if (params.phoneNumber) {
+      query = query.andWhere('user.phone_number = :phoneNumber', { phoneNumber: params.phoneNumber });
+    }
+
+    const [results, total] = await query
+      .orderBy('user.creationTime', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
