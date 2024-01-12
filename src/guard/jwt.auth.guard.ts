@@ -1,12 +1,10 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtCommonService } from '../auth/jwt.common.service';
-import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
-    private readonly jwtCommonService: JwtCommonService,
-    private readonly reflector: Reflector,
+    private readonly jwtCommonService: JwtCommonService
   ) { }
 
   canActivate(context: ExecutionContext): boolean {

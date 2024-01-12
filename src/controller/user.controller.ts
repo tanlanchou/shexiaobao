@@ -169,7 +169,7 @@ export class UserController {
       }
 
       const userData = new User();
-      
+
 
       userData.nickname = updateUserDto.nickname;
       if (updateUserDto.icon) userData.icon = updateUserDto.icon;
@@ -235,6 +235,12 @@ export class UserController {
     } catch (error) {
       return resultHelper.error(500, error.message);
     }
+  }
+
+  @Get("/reload/token/:token")
+  async reloadToken(@Param('token') token: string) {
+    const newToken = this.jwtService.refreshToken(token);
+    return resultHelper.success(newToken);
   }
 
   @Get('/sms/:phone')

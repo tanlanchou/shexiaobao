@@ -88,6 +88,7 @@ import { TypeOrmConfigService } from './connect/typeof.config';
 import { MenuController } from './controller/menu.controller';
 import { MenuService } from './service/menu.service';
 import { Menu } from './connect/Menu';
+
 @Module({
   imports: [
     JwtAuthModule,

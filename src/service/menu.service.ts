@@ -6,11 +6,15 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class MenuService extends CommonService<Menu> {
-  private readonly menuger = new Logger(MenuService.name);
-  constructor(
-    @InjectRepository(Menu)
-    private menuRepository: Repository<Menu>,
-  ) {
-    super(menuRepository);
-  }
+    private readonly menuger = new Logger(MenuService.name);
+    constructor(
+        @InjectRepository(Menu)
+        private menuRepository: Repository<Menu>,
+    ) {
+        super(menuRepository);
+    }
+
+    async findAll(): Promise<Menu[]> {
+        return await this.menuRepository.find({ order: { "order": "ASC" } });
+    }
 }

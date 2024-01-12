@@ -97,7 +97,7 @@ export class UserService {
     userData: Partial<User>,
   ): Promise<User | undefined> {
     await this.userRepository.update(id, userData);
-    return this.userRepository.findOne({ where: { id } });
+    return this.userRepository.findOne({ where: { id }, relations: ['role'] });
   }
 
   async deleteUser(id: number): Promise<boolean> {

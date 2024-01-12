@@ -26,4 +26,14 @@ export class Menu {
     default: () => "CURRENT_TIMESTAMP",
   })
   createTime: Date;
+
+  @Column("tinyint", {
+    name: "type",
+    nullable: true,
+    comment: "类型, 比如 2系统类型, 3产品类型",
+  })
+  type: number | null;
+
+  @Column("varchar", { name: "power", nullable: true, length: 30 })
+  power: string | null;
 }
