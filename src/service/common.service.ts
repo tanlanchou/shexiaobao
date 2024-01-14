@@ -18,8 +18,16 @@ export default class CommonService<T> {
     return await this.mapper.createQueryBuilder().where({ id }).getOne();
   }
 
-  async findAll(): Promise<T[]> {
-    return await this.mapper.find();
+  async findAll(params?: any): Promise<T[]> {
+    let query = this.mapper.createQueryBuilder();
+
+    if (params && params.name) {
+      // 如果 params 中有 name 属性，则执行 like 查询
+      query = query.andWhere('name like :name', { name: `%${params.name}%` });
+    }
+
+    // 执行查询
+    return await query.getMany();
   }
 
   async findByPage(

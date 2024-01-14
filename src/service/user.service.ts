@@ -10,7 +10,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async createUser(userData: Partial<User>): Promise<User> {
     if (!userData.status) userData.status = UserStatus.normal;
@@ -42,15 +42,21 @@ export class UserService {
     }
 
     if (params.nickname) {
-      query = query.andWhere('user.nickname like :nickname', { nickname: `%${params.nickname}%` });
+      query = query.andWhere('user.nickname like :nickname', {
+        nickname: `%${params.nickname}%`,
+      });
     }
 
     if (params.status) {
-      query = query.andWhere('user.status = :status', { status: params.status });
+      query = query.andWhere('user.status = :status', {
+        status: params.status,
+      });
     }
 
     if (params.phoneNumber) {
-      query = query.andWhere('user.phone_number = :phoneNumber', { phoneNumber: params.phoneNumber });
+      query = query.andWhere('user.phone_number = :phoneNumber', {
+        phoneNumber: params.phoneNumber,
+      });
     }
 
     const [results, total] = await query
@@ -74,22 +80,31 @@ export class UserService {
   }
 
   async findUserByRoleId(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { roleId: id }, relations: ['role'] });
+    return this.userRepository.findOne({
+      where: { roleId: id },
+      relations: ['role'],
+    });
   }
 
   async findUserByPhonePWD(phone: string, pwd: string) {
     return this.userRepository.findOne({
-      where: { phoneNumber: phone, password: pwd }
-      , relations: ['role']
+      where: { phoneNumber: phone, password: pwd },
+      relations: ['role'],
     });
   }
 
   async findUserByPhone(phone: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { phoneNumber: phone }, relations: ['role'] });
+    return this.userRepository.findOne({
+      where: { phoneNumber: phone },
+      relations: ['role'],
+    });
   }
 
   async findUserBynickName(nickName: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { nickname: nickName }, relations: ['role'] });
+    return this.userRepository.findOne({
+      where: { nickname: nickName },
+      relations: ['role'],
+    });
   }
 
   async updateUser(

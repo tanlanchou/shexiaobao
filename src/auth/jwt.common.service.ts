@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/connect/user';
+import { UserService } from 'src/service/user.service';
 
 @Injectable()
 export class JwtCommonService {
   private readonly logger = new Logger(JwtService.name);
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+  ) {}
 
   generateToken(user: User): string {
     const payload = { user };
@@ -37,11 +41,17 @@ export class JwtCommonService {
     }
   }
 
-  refreshToken(token: string): string {
+  async refreshToken(token: string): Promise<string> {
     const payload = this.verifyToken(token);
     if (payload) {
       delete payload.exp;
-      const newToken = this.jwtService.sign(payload);
+      const user = await this.userService.findUserById(payload.id);
+      if (!user) {
+        throw new Error(
+          `更新令牌时，查询用户出错, 用户电话${payload.phoneNumber}`,
+        );
+      }
+      const newToken = this.jwtService.sign({ user });
       this.logger.log(`Refreshed token for user ${payload.userId}`);
       return newToken;
     }

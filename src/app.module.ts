@@ -125,7 +125,7 @@ import { Menu } from './connect/Menu';
       OrderProduct,
       SalesChannels,
       Log,
-      Menu
+      Menu,
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -134,8 +134,9 @@ import { Menu } from './connect/Menu';
         destination: path.join(__dirname, '..', '/uploads'),
         // 通过时间戳来重命名上传的文件名
         filename: (_, file, callback) => {
-          const fileName = `${new Date().getTime() + path.extname(file.originalname)
-            }`;
+          const fileName = `${
+            new Date().getTime() + path.extname(file.originalname)
+          }`;
           return callback(null, fileName);
         },
       }),
@@ -197,7 +198,7 @@ import { Menu } from './connect/Menu';
     OrderProductService,
     SalesChannelsService,
     LogService,
-    MenuService
+    MenuService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

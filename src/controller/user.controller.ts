@@ -36,8 +36,8 @@ export class UserController {
     private readonly userService: UserService,
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
-    private readonly logService: LogService
-  ) { }
+    private readonly logService: LogService,
+  ) {}
 
   @Get('/page/:page')
   @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -160,8 +160,11 @@ export class UserController {
 
   @Put('/other/:id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  async update(@Param("id") id: number, @Body() updateUserDto: UpdateUserDto, @Req() request) {
-
+  async update(
+    @Param('id') id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() request,
+  ) {
     try {
       const userModel = await this.userService.findUserById(id);
       if (!userModel) {
@@ -169,7 +172,6 @@ export class UserController {
       }
 
       const userData = new User();
-
 
       userData.nickname = updateUserDto.nickname;
       if (updateUserDto.icon) userData.icon = updateUserDto.icon;
@@ -187,8 +189,7 @@ export class UserController {
         createTime: new Date(),
       });
       return resultHelper.success();
-    }
-    catch (ex) {
+    } catch (ex) {
       this.logger.error(ex.message);
       return resultHelper.error(500, ex.message);
     }
@@ -197,7 +198,6 @@ export class UserController {
   @Put('/update')
   @UseGuards(JwtAuthGuard)
   async updateOther(@Req() request, @Body() updateUserDto: UpdateUserDto) {
-
     const userModel = request.user;
     userModel.nickname = updateUserDto.nickname;
     if (updateUserDto.icon) userModel.icon = updateUserDto.icon;
@@ -237,9 +237,9 @@ export class UserController {
     }
   }
 
-  @Get("/reload/token/:token")
+  @Get('/reload/token/:token')
   async reloadToken(@Param('token') token: string) {
-    const newToken = this.jwtService.refreshToken(token);
+    const newToken = await this.jwtService.refreshToken(token);
     return resultHelper.success(newToken);
   }
 

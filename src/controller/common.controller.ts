@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 
 import { Logger } from '@nestjs/common';
@@ -50,9 +51,9 @@ export default class CommonController<T> {
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  async findAll() {
+  async findAll(@Req() request) {
     try {
-      const results = await this.common.findAll();
+      const results = await this.common.findAll(request.query);
       if (!results) return resultHelper.error(500, '没有找到对象');
 
       return resultHelper.success(results);

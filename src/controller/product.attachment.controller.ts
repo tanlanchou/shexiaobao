@@ -5,7 +5,9 @@ import CommonController from './common.controller';
 
 @Controller('product/attachment')
 export class ProductAttachmentController extends CommonController<ProductAttachment> {
-  constructor(private readonly productAttachmentService: ProductAttachmentService) {
+  constructor(
+    private readonly productAttachmentService: ProductAttachmentService,
+  ) {
     super(productAttachmentService);
   }
 }

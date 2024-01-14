@@ -3,9 +3,7 @@ import { JwtCommonService } from '../auth/jwt.common.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(
-    private readonly jwtCommonService: JwtCommonService
-  ) { }
+  constructor(private readonly jwtCommonService: JwtCommonService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
