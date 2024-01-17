@@ -11,7 +11,7 @@ export class Menu {
   @Column("varchar", { name: "url", comment: "菜单链接", length: 100 })
   url: string;
 
-  @Column("varchar", { name: "icon", comment: "icon css", length: 20 })
+  @Column("varchar", { name: "icon", comment: "icon css", length: 50 })
   icon: string;
 
   @Column("tinyint", { name: "common", comment: "是否是常用菜单" })
@@ -34,6 +34,6 @@ export class Menu {
   })
   type: number | null;
 
-  @Column("varchar", { name: "power", nullable: true, length: 30 })
+  @Column("varchar", { name: "power", nullable: true, length: 50 })
   power: string | null;
 }

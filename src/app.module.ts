@@ -88,6 +88,12 @@ import { TypeOrmConfigService } from './connect/typeof.config';
 import { MenuController } from './controller/menu.controller';
 import { MenuService } from './service/menu.service';
 import { Menu } from './connect/Menu';
+import { CustomerTagService } from './service/customer.tag.service';
+import { CustomerTagController } from './controller/customer.tag.controller';
+import { CustomerTag } from './connect/CustomerTag';
+import { Origin } from './connect/Origin';
+import { OriginController } from './controller/origin.controller';
+import { OriginService } from './service/origin.service';
 
 @Module({
   imports: [
@@ -126,6 +132,8 @@ import { Menu } from './connect/Menu';
       SalesChannels,
       Log,
       Menu,
+      CustomerTag,
+      Origin
     ]),
     ScheduleModule.forRoot(),
     MulterModule.register({
@@ -164,6 +172,8 @@ import { Menu } from './connect/Menu';
     SalesChannelsController,
     LogController,
     MenuController,
+    CustomerTagController,
+    OriginController
   ],
   providers: [
     AuthGuard,
@@ -199,6 +209,8 @@ import { Menu } from './connect/Menu';
     SalesChannelsService,
     LogService,
     MenuService,
+    CustomerTagService,
+    OriginService
   ],
 })
 export class AppModule {}

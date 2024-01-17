@@ -28,6 +28,7 @@ import { UpdateUserDto } from 'src/dto/update.user.dto';
 import { User } from 'src/connect/user';
 import { UserSearchDto } from 'src/dto/search.user.dto';
 import { request } from 'http';
+import { createPermissionGurad } from 'src/guard/permission.param.guard';
 
 @Controller('users')
 export class UserController {
@@ -37,12 +38,19 @@ export class UserController {
     private readonly jwtService: JwtCommonService,
     private readonly captchaService: CaptchaService,
     private readonly logService: LogService,
-  ) {}
+  ) { }
 
   @Get('/page/:page')
   @UseGuards(JwtAuthGuard, PermissionGuard)
   async getAllUsers(@Param('page') page: number, @Query() params) {
     const result = await this.userService.findByPage(page, 20, params);
+    return resultHelper.success(result);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard, createPermissionGurad("UserController_getAllUsers"))
+  async getFindAllUsers() {
+    const result = await this.userService.findAllUsers();
     return resultHelper.success(result);
   }
 

@@ -8,12 +8,14 @@ import {
   Param,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 
 import { Logger } from '@nestjs/common';
 import * as resultHelper from 'src/common/resultHelper';
 import { JwtAuthGuard } from 'src/guard/jwt.auth.guard';
 import { PermissionGuard } from 'src/guard/permission.gurad';
+import { createPermissionGurad } from 'src/guard/permission.param.guard';
 import CommonService from 'src/service/common.service';
 
 export default class CommonController<T> {
@@ -54,6 +56,29 @@ export default class CommonController<T> {
   async findAll(@Req() request) {
     try {
       const results = await this.common.findAll(request.query);
+      if (!results) return resultHelper.error(500, '没有找到对象');
+
+      return resultHelper.success(results);
+    } catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
+  }
+
+  @Post("/find/all/:page")
+  @UseGuards(JwtAuthGuard, createPermissionGurad("findAll", true))
+  async findAllByPage(@Param('page') page: number, @Body() params) {
+    try {
+      // let arr = [];
+      // Object.keys(params).forEach((key) => {
+      //   let v = params[key].split(',');
+      //   arr.push({
+      //     key,
+      //     value: v[0],
+      //     isLike: v[1] == 1
+      //   });
+      // });
+      const results = await this.common.findByPage(page, 20, params);
       if (!results) return resultHelper.error(500, '没有找到对象');
 
       return resultHelper.success(results);

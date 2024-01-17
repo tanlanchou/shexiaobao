@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 
 export default class CommonService<T> {
   // 定义mapper属性，由子类具体实现赋值
-  constructor(readonly mapper: Repository<T>) {}
+  constructor(readonly mapper: Repository<T>) { }
 
   async create(data: any): Promise<T> {
     const result = await this.mapper.save(data);
@@ -33,18 +33,30 @@ export default class CommonService<T> {
   async findByPage(
     page: number,
     limit: number,
+    params: { key: string; value: any; isLike: boolean }[] = [],
   ): Promise<{ results: T[]; total: number }> {
-    const [results, total] = await this.mapper.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
+    const queryBuilder = this.mapper.createQueryBuilder();
+
+    // 遍历 params 的数组，根据 isLike 判断是否使用 like 查询
+    params.forEach(({ key, value, isLike }) => {
+      if (isLike) {
+        queryBuilder.andWhere(`${key} LIKE :${key}`, { [key]: `%${value}%` });
+      } else {
+        queryBuilder.andWhere(`${key} = :${key}`, { [key]: value });
+      }
     });
+
+    const [results, total] = await queryBuilder
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     return {
       results,
       total,
     };
   }
-
+  
   async update(id: number, data: any): Promise<T> {
     const result = await this.findOne(id);
     if (result) {

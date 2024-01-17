@@ -183,4 +183,12 @@ export class ProductInfo {
     length: 500,
   })
   staticList: string | null;
+
+  @Column("varchar", {
+    name: "sizes",
+    nullable: true,
+    comment: "尺寸",
+    length: 20,
+  })
+  sizes: string | null;
 }

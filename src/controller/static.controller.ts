@@ -15,16 +15,16 @@ import { ConfigService } from '@nestjs/config';
 export class StaticController {
   private readonly logger = new Logger(StaticController.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) { }
 
   @Post('upload')
-  @UseGuards(JwtAuthGuard, PermissionGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<{ url: string }> {
+  ): Promise<any> {
     return {
-      url: `/${this.configService.get<string>('STATIC_NAME')}/${file.filename}`,
+      data: `${this.configService.get<string>('HOST')}/${this.configService.get<string>('STATIC_NAME') || "static"}/${file.filename}`,
+      errno: 0
     };
   }
 }
