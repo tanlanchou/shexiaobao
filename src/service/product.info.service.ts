@@ -15,6 +15,19 @@ export class ProductInfoService extends CommonService<ProductInfo> {
     super(productInfoRepository);
   }
 
+  async findOne(id: number): Promise<ProductInfo | null> {
+    return await this.productInfoRepository.findOne({
+      where: { id },
+      relations: [
+        'productCategory',
+        'productOrigin',
+        'productQuality',
+        'productStore',
+        'productType',
+      ],
+    });
+  }
+
   async search(
     page: number,
     limit: number,

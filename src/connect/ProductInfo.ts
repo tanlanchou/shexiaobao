@@ -1,5 +1,22 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ProductCategory } from './ProductCategory';
+import { ProductOrigin } from './ProductOrigin';
+import { ProductQuality } from './ProductQuality';
+import { ProductStorehouse } from './ProductStorehouse';
+import { ProductType } from './ProductType';
 
+@Index('product_info_product_category_FK', ['productCategoryId'], {})
+@Index('product_info_product_origin_FK', ['productOriginId'], {})
+@Index('product_info_product_quality_FK', ['productQualityId'], {})
+@Index('product_info_product_storehouse_FK', ['productStoreId'], {})
+@Index('product_info_product_type_FK', ['productTypeId'], {})
 @Entity('product_info', { schema: 'sxb' })
 export class ProductInfo {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
@@ -191,4 +208,24 @@ export class ProductInfo {
     length: 20,
   })
   sizes: string | null;
+
+  @ManyToOne(() => ProductCategory)
+  @JoinColumn([{ name: 'product_category_id', referencedColumnName: 'id' }])
+  productCategory: ProductCategory;
+
+  @ManyToOne(() => ProductOrigin)
+  @JoinColumn([{ name: 'product_origin_id', referencedColumnName: 'id' }])
+  productOrigin: ProductOrigin;
+
+  @ManyToOne(() => ProductQuality)
+  @JoinColumn([{ name: 'product_quality_id', referencedColumnName: 'id' }])
+  productQuality: ProductQuality;
+
+  @ManyToOne(() => ProductStorehouse)
+  @JoinColumn([{ name: 'product_store_id', referencedColumnName: 'id' }])
+  productStore: ProductStorehouse;
+
+  @ManyToOne(() => ProductType)
+  @JoinColumn([{ name: 'product_type_id', referencedColumnName: 'id' }])
+  productType: ProductType;
 }
