@@ -1,0 +1,28 @@
+export type productSearchType = {
+  productOriginId?: number;
+  productCategoryId?: number;
+  order?: number;
+  keywords?: string;
+  productTypeId?: number;
+  productStoreId?: number;
+  productQualityId?: number;
+  minCostPrice?: string;
+  maxCostPrice?: string;
+  minSellingPrice?: string;
+  maxSellingPrice?: string;
+  minPeerPrice?: string;
+  maxPeerPrice?: string;
+  minLiveBroadcastPrice?: string;
+  maxLiveBroadcastPrice?: string;
+  minCounterPrice?: string;
+  maxCounterPrice?: string;
+  type?: number;
+  forPeople?: number;
+  size?: number;
+  productMaterial?: string[];
+  arraivalRange?: string[];
+  inTImeRange?: string[];
+  buyer?: number;
+  productTag?: string[];
+  productAttach?: string[];
+};

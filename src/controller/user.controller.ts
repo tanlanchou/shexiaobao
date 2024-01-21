@@ -25,7 +25,7 @@ import { LogService } from 'src/service/log.service';
 import { JwtAuthGuard } from 'src/guard/jwt.auth.guard';
 import { PermissionGuard } from 'src/guard/permission.gurad';
 import { UpdateUserDto } from 'src/dto/update.user.dto';
-import { User } from 'src/connect/user';
+import { User } from 'src/connect/User';
 import { UserSearchDto } from 'src/dto/search.user.dto';
 import { request } from 'http';
 import { createPermissionGurad } from 'src/guard/permission.param.guard';

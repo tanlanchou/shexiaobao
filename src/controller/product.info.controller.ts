@@ -5,13 +5,27 @@ import CommonController from './common.controller';
 import { JwtAuthGuard } from 'src/guard/jwt.auth.guard';
 import { PermissionGuard } from 'src/guard/permission.gurad';
 import * as resultHelper from 'src/common/resultHelper';
-import { Logger } from 'winston';
 import { ProductInfoDto } from 'src/dto/product.info.dto';
+import { createPermissionGurad } from 'src/guard/permission.param.guard';
 
 @Controller('product/info')
 export class ProductInfoController extends CommonController<ProductInfo> {
   constructor(private readonly productInfoService: ProductInfoService) {
     super(productInfoService);
+  }
+
+  @Post('/search/all/:page')
+  @UseGuards(JwtAuthGuard, createPermissionGurad('findAll', true))
+  async findAllByPage(@Param('page') page: number, @Body() params) {
+    try {
+      const results = await this.productInfoService.search(page, 15, params);
+      if (!results) return resultHelper.error(500, '没有找到对象');
+
+      return resultHelper.success(results);
+    } catch (ex) {
+      this.logger.error(ex.message);
+      return resultHelper.error(500, ex.message);
+    }
   }
 
   @Post()
@@ -32,7 +46,6 @@ export class ProductInfoController extends CommonController<ProductInfo> {
       return resultHelper.error(500, ex.message);
     }
   }
-
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)

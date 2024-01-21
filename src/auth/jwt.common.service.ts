@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/connect/user';
+import { User } from 'src/connect/User';
 import { UserService } from 'src/service/user.service';
 
 @Injectable()

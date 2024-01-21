@@ -64,7 +64,7 @@ import { SalesChannelsController } from './controller/sales.channels.controller'
 import { SalesChannelsService } from './service/sales.channels.service';
 import { LogService } from './service/log.service';
 import { LogController } from './controller/log.controller';
-import { User } from './connect/user';
+import { User } from './connect/User';
 import { Order } from './connect/Order';
 import { OrderProduct } from './connect/OrderProduct';
 import { SalesChannels } from './connect/SalesChannels';

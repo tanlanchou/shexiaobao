@@ -65,19 +65,19 @@ export default class CommonController<T> {
     }
   }
 
-  @Post("/find/all/:page")
-  @UseGuards(JwtAuthGuard, createPermissionGurad("findAll", true))
+  @Post('/find/all/:page')
+  @UseGuards(JwtAuthGuard, createPermissionGurad('findAll', true))
   async findAllByPage(@Param('page') page: number, @Body() params) {
     try {
-      // let arr = [];
-      // Object.keys(params).forEach((key) => {
-      //   let v = params[key].split(',');
-      //   arr.push({
-      //     key,
-      //     value: v[0],
-      //     isLike: v[1] == 1
-      //   });
-      // });
+      const arr = [];
+      Object.keys(params).forEach((key) => {
+        const v = params[key].split(',');
+        arr.push({
+          key,
+          value: v[0],
+          isLike: v[1] == 1,
+        });
+      });
       const results = await this.common.findByPage(page, 20, params);
       if (!results) return resultHelper.error(500, '没有找到对象');
 
