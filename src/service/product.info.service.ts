@@ -24,7 +24,27 @@ export class ProductInfoService extends CommonService<ProductInfo> {
         'productQuality',
         'productStore',
         'productType',
+        'user'
       ],
+    });
+  }
+
+  async update(id: number, data: any): Promise<ProductInfo> {
+    const result = await this.findOneNoRelations(id);
+    if (result) {
+      for (const key in data) {
+        result[key] = data[key];
+      }
+
+      await this.productInfoRepository.save(result);
+      return result;
+    }
+    return null;
+  }
+
+  async findOneNoRelations(id: number): Promise<ProductInfo | null> {
+    return await this.productInfoRepository.findOne({
+      where: { id }
     });
   }
 

@@ -11,6 +11,7 @@ import { ProductOrigin } from './ProductOrigin';
 import { ProductQuality } from './ProductQuality';
 import { ProductStorehouse } from './ProductStorehouse';
 import { ProductType } from './ProductType';
+import { User } from './User';
 
 @Index('product_info_product_category_FK', ['productCategoryId'], {})
 @Index('product_info_product_origin_FK', ['productOriginId'], {})
@@ -228,4 +229,8 @@ export class ProductInfo {
   @ManyToOne(() => ProductType)
   @JoinColumn([{ name: 'product_type_id', referencedColumnName: 'id' }])
   productType: ProductType;
+
+  @ManyToOne(() => User)
+  @JoinColumn([{ name: 'buyer', referencedColumnName: 'id' }])
+  user: User;
 }
