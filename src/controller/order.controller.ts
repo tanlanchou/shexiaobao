@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -21,7 +22,6 @@ import { PermissionGuard } from 'src/guard/permission.gurad';
 import { OrderProduct } from 'src/connect/OrderProduct';
 import { ProductInfo } from 'src/connect/ProductInfo';
 import { OrderState, ProductInfoState } from 'src/common/enmu';
-import { Transaction } from 'typeorm';
 import { UserService } from 'src/service/user.service';
 import { CustomerService } from 'src/service/customer.service';
 import { SalesChannelsService } from 'src/service/sales.channels.service';
@@ -35,7 +35,7 @@ export class OrderController extends CommonController<Order> {
     private readonly orderProductService: OrderProductService,
     private readonly userService: UserService,
     private readonly customerService: CustomerService,
-    private readonly salesChannelsService: SalesChannelsService
+    private readonly salesChannelsService: SalesChannelsService,
   ) {
     super(orderService);
   }
@@ -118,9 +118,10 @@ export class OrderController extends CommonController<Order> {
             productIds[i],
           );
           if (!productInfoModel) {
-            this.logger.error(`订单找不到产品, 订单ID: ${id}, 产品ID: ${productIds[i]}`);
-          }
-          else {
+            this.logger.error(
+              `订单找不到产品, 订单ID: ${id}, 产品ID: ${productIds[i]}`,
+            );
+          } else {
             productInfos.push(productInfoModel);
           }
         }
@@ -128,43 +129,44 @@ export class OrderController extends CommonController<Order> {
 
       result = Object.assign({}, orderModel, { products: productInfos });
 
-      const customerModel = await this.customerService.findOne(orderModel.customerId);
+      const customerModel = await this.customerService.findOne(
+        orderModel.customerId,
+      );
       if (!customerModel) {
         this.logger.error(`订单找不到客户, 订单ID: ${id}`);
-      }
-      else {
-        result = Object.assign({}, result, { customer: customerModel })
+      } else {
+        result = Object.assign({}, result, { customer: customerModel });
       }
 
       const salesChannelsModel = await this.salesChannelsService.findOne(
         orderModel.salesChannelsId,
       );
       if (!salesChannelsModel) {
-        this.logger.error("订单找不到销售渠道, 订单ID: ${id}");
-      }
-      else {
-        result = Object.assign({}, result, { salesChannels: salesChannelsModel })
+        this.logger.error('订单找不到销售渠道, 订单ID: ${id}');
+      } else {
+        result = Object.assign({}, result, {
+          salesChannels: salesChannelsModel,
+        });
       }
 
       const salerModel = await this.userService.findUserById(orderModel.saler);
       if (!salerModel) {
-        this.logger.error("订单找不到主要销售人员, 订单ID: ${id}");
-      }
-      else {
+        this.logger.error('订单找不到主要销售人员, 订单ID: ${id}');
+      } else {
         result = Object.assign({}, result, { saler: salerModel });
       }
 
-
       if (orderModel.hepler !== undefined && orderModel.hepler !== null) {
-        const heplerModel = await this.userService.findUserById(orderModel.hepler);
+        const heplerModel = await this.userService.findUserById(
+          orderModel.hepler,
+        );
         if (!heplerModel) {
-          this.logger.error("订单找不到辅助销售人员, 订单ID: ${id}");
-        }
-        else {
+          this.logger.error('订单找不到辅助销售人员, 订单ID: ${id}');
+        } else {
           result = Object.assign({}, result, { hepler: heplerModel });
         }
       }
-      
+
       return resultHelper.success(result);
     } catch (ex) {
       this.logger.error(ex.message);
@@ -173,7 +175,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_findAll"))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_findAll'))
   async findAllByUser(@Req() request) {
     try {
       const user = request.user;
@@ -189,8 +191,15 @@ export class OrderController extends CommonController<Order> {
     }
   }
 
+  @Get('/find/all/:page')
+  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_findAll'))
+  async findAllOrderByPage(@Param('page') page: number, @Query() params) {
+    const result = this.orderService.findAllOrderByPage(page, 20, params);
+    return resultHelper.success(result);
+  }
+
   @Put('/status/cancel/:id')
-  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_update"))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_update'))
   async cancel(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);
@@ -227,7 +236,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Put('/status/return/:id')
-  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_update"))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_update'))
   async returnOrder(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);

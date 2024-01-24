@@ -10,7 +10,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async createUser(userData: Partial<User>): Promise<User> {
     if (!userData.status) userData.status = UserStatus.normal;
@@ -33,7 +33,7 @@ export class UserService {
     limit: number,
     params: any,
   ): Promise<{ results: User[]; total: number }> {
-    let query = this.userRepository
+    const query = this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.role', 'role');
 
@@ -61,37 +61,39 @@ export class UserService {
 
     if (params.createTimeRange && params.createTimeRange.length > 0) {
       const time = params.createTimeRange.split(',');
-      query.andWhere(
-        'user.creation_time BETWEEN :startTime AND :endTime',
-        {
-          startTime: time[0],
-          endTime: time[1],
-        },
-      );
+      query.andWhere('user.creation_time BETWEEN :startTime AND :endTime', {
+        startTime: time[0],
+        endTime: time[1],
+      });
     }
 
     if (params.loginRange && params.loginRange.length > 0) {
       const time = params.loginRange.split(',');
-      query.andWhere(
-        'user.last_login_time BETWEEN :startTime AND :endTime',
-        {
-          startTime: time[0],
-          endTime: time[1],
-        },
-      );
+      query.andWhere('user.last_login_time BETWEEN :startTime AND :endTime', {
+        startTime: time[0],
+        endTime: time[1],
+      });
     }
 
     if (params.order !== undefined && params.order !== null) {
       switch (params.order) {
-        case '0': query.orderBy('user.creationTime', "DESC"); break;
-        case '1': query.orderBy('user.creationTime', "ASC"); break;
-        case '2': query.orderBy('user.lastLoginTime', "DESC"); break;
-        case '3': query.orderBy('user.lastLoginTime', "ASC"); break;
-        default: query.orderBy('user.creationTime', "DESC"); break;
+        case '0':
+          query.orderBy('user.creationTime', 'DESC');
+          break;
+        case '1':
+          query.orderBy('user.creationTime', 'ASC');
+          break;
+        case '2':
+          query.orderBy('user.lastLoginTime', 'DESC');
+          break;
+        case '3':
+          query.orderBy('user.lastLoginTime', 'ASC');
+          break;
+        default:
+          query.orderBy('user.creationTime', 'DESC');
+          break;
       }
     }
-
-
 
     const [results, total] = await query
       .skip((page - 1) * limit)
