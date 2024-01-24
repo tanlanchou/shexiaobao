@@ -22,6 +22,10 @@ import { OrderProduct } from 'src/connect/OrderProduct';
 import { ProductInfo } from 'src/connect/ProductInfo';
 import { OrderState, ProductInfoState } from 'src/common/enmu';
 import { Transaction } from 'typeorm';
+import { UserService } from 'src/service/user.service';
+import { CustomerService } from 'src/service/customer.service';
+import { SalesChannelsService } from 'src/service/sales.channels.service';
+import { createPermissionGurad } from 'src/guard/permission.param.guard';
 
 @Controller('order')
 export class OrderController extends CommonController<Order> {
@@ -29,6 +33,9 @@ export class OrderController extends CommonController<Order> {
     private readonly orderService: OrderService,
     private readonly productService: ProductInfoService,
     private readonly orderProductService: OrderProductService,
+    private readonly userService: UserService,
+    private readonly customerService: CustomerService,
+    private readonly salesChannelsService: SalesChannelsService
   ) {
     super(orderService);
   }
@@ -99,6 +106,8 @@ export class OrderController extends CommonController<Order> {
         return resultHelper.error(500, '订单不存在');
       }
 
+      let result = {};
+
       const productInfos = [];
       const orderProductModels =
         await this.orderProductService.getProductByOrderId(id);
@@ -109,15 +118,54 @@ export class OrderController extends CommonController<Order> {
             productIds[i],
           );
           if (!productInfoModel) {
-            return resultHelper.error(500, '关联的产品信息错误');
+            this.logger.error(`订单找不到产品, 订单ID: ${id}, 产品ID: ${productIds[i]}`);
           }
-          productInfos.push(productInfoModel);
+          else {
+            productInfos.push(productInfoModel);
+          }
         }
       }
-      return resultHelper.success({
-        order: orderModel,
-        productInfos,
-      });
+
+      result = Object.assign({}, orderModel, { products: productInfos });
+
+      const customerModel = await this.customerService.findOne(orderModel.customerId);
+      if (!customerModel) {
+        this.logger.error(`订单找不到客户, 订单ID: ${id}`);
+      }
+      else {
+        result = Object.assign({}, result, { customer: customerModel })
+      }
+
+      const salesChannelsModel = await this.salesChannelsService.findOne(
+        orderModel.salesChannelsId,
+      );
+      if (!salesChannelsModel) {
+        this.logger.error("订单找不到销售渠道, 订单ID: ${id}");
+      }
+      else {
+        result = Object.assign({}, result, { salesChannels: salesChannelsModel })
+      }
+
+      const salerModel = await this.userService.findUserById(orderModel.saler);
+      if (!salerModel) {
+        this.logger.error("订单找不到主要销售人员, 订单ID: ${id}");
+      }
+      else {
+        result = Object.assign({}, result, { saler: salerModel });
+      }
+
+
+      if (orderModel.hepler !== undefined && orderModel.hepler !== null) {
+        const heplerModel = await this.userService.findUserById(orderModel.hepler);
+        if (!heplerModel) {
+          this.logger.error("订单找不到辅助销售人员, 订单ID: ${id}");
+        }
+        else {
+          result = Object.assign({}, result, { hepler: heplerModel });
+        }
+      }
+      
+      return resultHelper.success(result);
     } catch (ex) {
       this.logger.error(ex.message);
       return resultHelper.error(500, ex.message);
@@ -125,7 +173,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_findAll"))
   async findAllByUser(@Req() request) {
     try {
       const user = request.user;
@@ -142,7 +190,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Put('/status/cancel/:id')
-  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_update"))
   async cancel(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);
@@ -179,7 +227,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Put('/status/return/:id')
-  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @UseGuards(JwtAuthGuard, createPermissionGurad("PermissionGuard_update"))
   async returnOrder(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);

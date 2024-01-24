@@ -44,6 +44,16 @@ export default class CommonController<T> {
       const result = await this.common.findOne(id);
       if (!result) return resultHelper.error(500, '没有找到对象');
 
+
+      if (result.parentId !== undefined && result.parentId !== null && result.parentId !== 0) {
+        let parent: any = null;
+        parent = await this.common.findOne(result.parentId);
+        if (parent !== null) {
+          result.parent = parent;
+          return resultHelper.success(result);
+        }
+      }
+
       return resultHelper.success(result);
     } catch (ex) {
       this.logger.error(ex.message);
@@ -69,16 +79,23 @@ export default class CommonController<T> {
   @UseGuards(JwtAuthGuard, createPermissionGurad('findAll', true))
   async findAllByPage(@Param('page') page: number, @Body() params) {
     try {
+      let results;
       const arr = [];
-      Object.keys(params).forEach((key) => {
-        const v = params[key].split(',');
-        arr.push({
-          key,
-          value: v[0],
-          isLike: v[1] == 1,
+      if (Array.isArray(params)) {
+        results = await this.common.findByPage(page, 20, params);
+      }
+      else {
+        Object.keys(params).forEach((key) => {
+          const v = params[key].split(',');
+          arr.push({
+            key,
+            value: v[0],
+            isLike: v[1] == 1,
+          });
         });
-      });
-      const results = await this.common.findByPage(page, 20, params);
+        results = await this.common.findByPage(page, 20, arr);
+      }
+
       if (!results) return resultHelper.error(500, '没有找到对象');
 
       return resultHelper.success(results);

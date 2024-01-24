@@ -5,7 +5,7 @@ export default class CommonService<T> {
   constructor(readonly mapper: Repository<T>) { }
 
   async create(data: any): Promise<T> {
-    const result = await this.mapper.save(data);
+    const result: any = await this.mapper.save(data);
     return result;
   }
 
@@ -23,7 +23,11 @@ export default class CommonService<T> {
 
     if (params && params.name) {
       // 如果 params 中有 name 属性，则执行 like 查询
-      query = query.andWhere('name like :name', { name: `%${params.name}%` });
+      query.andWhere('name like :name', { name: `%${params.name}%` });
+    }
+
+    if (params && params.pid !== undefined && params.pid !== null) {
+      query.andWhere('(parent_id = :pid or id = :pid)', { pid: params.pid });
     }
 
     // 执行查询
@@ -56,7 +60,7 @@ export default class CommonService<T> {
       total,
     };
   }
-  
+
   async update(id: number, data: any): Promise<T> {
     const result = await this.findOne(id);
     if (result) {

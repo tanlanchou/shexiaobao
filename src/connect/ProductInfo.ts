@@ -1,236 +1,194 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { ProductCategory } from './ProductCategory';
-import { ProductOrigin } from './ProductOrigin';
-import { ProductQuality } from './ProductQuality';
-import { ProductStorehouse } from './ProductStorehouse';
-import { ProductType } from './ProductType';
-import { User } from './User';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
-@Index('product_info_product_category_FK', ['productCategoryId'], {})
-@Index('product_info_product_origin_FK', ['productOriginId'], {})
-@Index('product_info_product_quality_FK', ['productQualityId'], {})
-@Index('product_info_product_storehouse_FK', ['productStoreId'], {})
-@Index('product_info_product_type_FK', ['productTypeId'], {})
-@Entity('product_info', { schema: 'sxb' })
+@Entity("product_info", { schema: "sxb" })
 export class ProductInfo {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column('varchar', { name: 'title', length: 50 })
+  @Column("varchar", { name: "title", length: 50 })
   title: string;
 
-  @Column('int', { name: 'product_type_id' })
+  @Column("int", { name: "product_type_id" })
   productTypeId: number;
 
-  @Column('int', { name: 'product_category_id' })
+  @Column("int", { name: "product_category_id" })
   productCategoryId: number;
 
-  @Column('int', { name: 'product_quality_id', comment: '成色类型' })
+  @Column("int", { name: "product_quality_id", comment: "成色类型" })
   productQualityId: number;
 
-  @Column('int', { name: 'product_origin_id', comment: '来源类型' })
+  @Column("int", { name: "product_origin_id", comment: "来源类型" })
   productOriginId: number;
 
-  @Column('varchar', {
-    name: 'origin_name',
+  @Column("varchar", {
+    name: "origin_name",
     nullable: true,
-    comment: '商品来源方名称',
+    comment: "商品来源方名称",
     length: 50,
   })
   originName: string | null;
 
-  @Column('int', { name: 'origin_id', nullable: true, comment: '来源商家ID' })
+  @Column("int", { name: "origin_id", nullable: true, comment: "来源商家ID" })
   originId: number | null;
 
-  @Column('int', { name: 'product_store_id', comment: '内部编号' })
+  @Column("int", { name: "product_store_id", comment: "内部编号" })
   productStoreId: number;
 
-  @Column('varchar', {
-    name: 'NO',
+  @Column("varchar", {
+    name: "NO",
     nullable: true,
-    comment: '店铺编货',
+    comment: "店铺编货",
     length: 50,
   })
   no: string | null;
 
-  @Column('float', {
-    name: 'cost_price',
+  @Column("float", {
+    name: "cost_price",
     nullable: true,
-    comment: '成本价',
+    comment: "成本价",
     precision: 12,
   })
   costPrice: number | null;
 
-  @Column('float', {
-    name: 'selling_price',
+  @Column("float", {
+    name: "selling_price",
     nullable: true,
-    comment: '销售价',
+    comment: "销售价",
     precision: 12,
   })
   sellingPrice: number | null;
 
-  @Column('float', {
-    name: 'peer_price',
+  @Column("float", {
+    name: "peer_price",
     nullable: true,
-    comment: '同行价',
+    comment: "同行价",
     precision: 12,
   })
   peerPrice: number | null;
 
-  @Column('float', {
-    name: 'live_broadcast_price',
+  @Column("float", {
+    name: "live_broadcast_price",
     nullable: true,
-    comment: '直播价',
+    comment: "直播价",
     precision: 12,
   })
   liveBroadcastPrice: number | null;
 
-  @Column('float', {
-    name: 'counter_price',
+  @Column("float", {
+    name: "counter_price",
     nullable: true,
-    comment: '专柜价',
+    comment: "专柜价",
     precision: 12,
   })
   counterPrice: number | null;
 
-  @Column('tinyint', {
-    name: 'type',
+  @Column("tinyint", {
+    name: "type",
     nullable: true,
-    comment: '类型 现代1|中古2',
+    comment: "类型 现代1|中古2",
   })
   type: number | null;
 
-  @Column('varchar', {
-    name: 'laser_marking',
+  @Column("varchar", {
+    name: "laser_marking",
     nullable: true,
-    comment: '镭射刻印',
+    comment: "镭射刻印",
     length: 50,
   })
   laserMarking: string | null;
 
-  @Column('tinyint', {
-    name: 'for_people',
+  @Column("tinyint", {
+    name: "for_people",
     nullable: true,
-    comment: '1. 通用 2. 女 3. 男',
+    comment: "1. 通用 2. 女 3. 男",
   })
   forPeople: number | null;
 
-  @Column('tinyint', {
-    name: 'size',
+  @Column("tinyint", {
+    name: "size",
     nullable: true,
-    comment: '1. 超迷你 2. 迷你 3. 小号 4. 中号 5.大号 6. 超大号',
+    comment: "1. 超迷你 2. 迷你 3. 小号 4. 中号 5.大号 6. 超大号",
   })
   size: number | null;
 
-  @Column('varchar', {
-    name: 'product_material',
+  @Column("varchar", {
+    name: "product_material",
     nullable: true,
-    comment: '材质',
+    comment: "材质",
     length: 200,
   })
   productMaterial: string | null;
 
-  @Column('varchar', {
-    name: 'color',
+  @Column("varchar", {
+    name: "color",
     nullable: true,
-    comment: '颜色',
+    comment: "颜色",
     length: 10,
   })
   color: string | null;
 
-  @Column('tinyint', {
-    name: 'count',
+  @Column("tinyint", {
+    name: "count",
     nullable: true,
-    comment: '数量',
+    comment: "数量",
     default: () => "'1'",
   })
   count: number | null;
 
-  @Column('datetime', { name: 'arrival_time', comment: '到达时间' })
+  @Column("datetime", { name: "arrival_time", comment: "到达时间" })
   arrivalTime: Date;
 
-  @Column('datetime', { name: 'in_time', comment: '入库时间' })
+  @Column("datetime", { name: "in_time", comment: "入库时间" })
   inTime: Date;
 
-  @Column('int', { name: 'buyer', comment: '买手' })
+  @Column("int", { name: "buyer", comment: "买手" })
   buyer: number;
 
-  @Column('varchar', {
-    name: 'product_tag',
+  @Column("varchar", {
+    name: "product_tag",
     nullable: true,
-    comment: '标签',
+    comment: "标签",
     length: 200,
   })
   productTag: string | null;
 
-  @Column('varchar', {
-    name: 'product_attach',
+  @Column("varchar", {
+    name: "product_attach",
     nullable: true,
-    comment: '附件',
+    comment: "附件",
     length: 200,
   })
   productAttach: string | null;
 
-  @Column('varchar', { name: 'description', nullable: true, length: 200 })
+  @Column("varchar", { name: "description", nullable: true, length: 200 })
   description: string | null;
 
-  @Column('tinyint', {
-    name: 'status',
+  @Column("tinyint", {
+    name: "status",
     nullable: true,
-    comment: '1. 正常 2. 删除 3. 暂停',
+    comment: "1. 正常 2. 删除 3. 暂停",
   })
   status: number | null;
 
-  @Column('int', {
-    name: 'workflow',
-    comment: '1. 未入库， 2. 入库 3. 开单。 4.出库',
+  @Column("int", {
+    name: "workflow",
+    comment: "1. 未入库， 2. 入库 3. 开单。 4.出库",
   })
   workflow: number;
 
-  @Column('varchar', {
-    name: 'static_list',
+  @Column("varchar", {
+    name: "static_list",
     nullable: true,
-    comment: '静态路径',
+    comment: "静态路径",
     length: 500,
   })
   staticList: string | null;
 
-  @Column('varchar', {
-    name: 'sizes',
+  @Column("varchar", {
+    name: "sizes",
     nullable: true,
-    comment: '尺寸',
+    comment: "尺寸",
     length: 20,
   })
   sizes: string | null;
-
-  @ManyToOne(() => ProductCategory)
-  @JoinColumn([{ name: 'product_category_id', referencedColumnName: 'id' }])
-  productCategory: ProductCategory;
-
-  @ManyToOne(() => ProductOrigin)
-  @JoinColumn([{ name: 'product_origin_id', referencedColumnName: 'id' }])
-  productOrigin: ProductOrigin;
-
-  @ManyToOne(() => ProductQuality)
-  @JoinColumn([{ name: 'product_quality_id', referencedColumnName: 'id' }])
-  productQuality: ProductQuality;
-
-  @ManyToOne(() => ProductStorehouse)
-  @JoinColumn([{ name: 'product_store_id', referencedColumnName: 'id' }])
-  productStore: ProductStorehouse;
-
-  @ManyToOne(() => ProductType)
-  @JoinColumn([{ name: 'product_type_id', referencedColumnName: 'id' }])
-  productType: ProductType;
-
-  @ManyToOne(() => User)
-  @JoinColumn([{ name: 'buyer', referencedColumnName: 'id' }])
-  user: User;
 }
