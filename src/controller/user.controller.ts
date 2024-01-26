@@ -81,7 +81,7 @@ export class UserController {
       }
 
       if (user.status === UserStatus.noVerification) {
-        return resultHelper.error(500, `请等待管理员通过您的账户`);
+        return resultHelper.error(500, `还没有通过管理员验证`);
       }
 
       user.lastLoginTime = new Date();
@@ -108,6 +108,10 @@ export class UserController {
 
         if (user.status === UserStatus.disable) {
           return resultHelper.error(500, `用户已被禁用`);
+        }
+
+        if (user.status === UserStatus.noVerification) {
+          return resultHelper.error(500, `还没有通过管理员验证`);
         }
 
         user.lastLoginTime = new Date();

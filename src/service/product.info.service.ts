@@ -229,6 +229,12 @@ export class ProductInfoService extends CommonService<ProductInfo> {
       });
     }
 
+    if (params.status != undefined) {
+      queryBuilder.andWhere('status = :status', {
+        status: `${params.status}`,
+      });
+    }
+
     if (
       params.arraivalRange != undefined &&
       Array.isArray(params.arraivalRange) &&

@@ -51,6 +51,7 @@ export default class CommonService<T> {
     });
 
     const [results, total] = await queryBuilder
+      .orderBy('id', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();

@@ -58,4 +58,12 @@ export class Order {
     comment: "1. 开单，运输中 2. 完成 3. 撤销订单",
   })
   status: number;
+
+  @Column("varchar", {
+    name: "title",
+    nullable: true,
+    comment: "自动生成,后期可以开放,用于简单描述这个订单是做什么的",
+    length: 100,
+  })
+  title: string | null;
 }

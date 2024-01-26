@@ -13,6 +13,7 @@ import { ProductQualityService } from 'src/service/product.quality.service';
 import { ProductOriginService } from 'src/service/product.origin.service';
 import { ProductStorehouseService } from 'src/service/product.storehouse.service';
 import { UserService } from 'src/service/user.service';
+import { ProductInfoState } from 'src/common/enmu';
 
 let arr = ["productMaterial", "productTag", "productAttach"]
 @Controller('product/info')
@@ -83,7 +84,7 @@ export class ProductInfoController extends CommonController<ProductInfo> {
         }
       }
       model.workflow = 2;
-      model.status = 1;
+      model.status = ProductInfoState.InStoreHouse;
       const result = await this.productInfoService.create(model);
       return resultHelper.success(result);
     } catch (ex) {

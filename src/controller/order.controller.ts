@@ -53,11 +53,16 @@ export class OrderController extends CommonController<Order> {
         const productId = productIdsArray[i];
         const productModel = await this.productService.findOne(productId);
         if (!productModel) {
-          return resultHelper.error(500, '产品不存在');
+          return resultHelper.error(500, '选中的产品已被删除');
         } else if (productModel.status !== ProductInfoState.InStoreHouse) {
-          return resultHelper.error(500, '产品状态不正确');
+          return resultHelper.error(500, '产品已卖出或禁用');
         }
         productsArray.push(productModel);
+      }
+
+      const customer = await this.customerService.findOne(data.customerId);
+      if(!customer) {
+        return resultHelper.error(500, '客户不存在');
       }
 
       const order = new Order();
@@ -73,6 +78,7 @@ export class OrderController extends CommonController<Order> {
       order.saleTime = new Date(data.saleTime);
       order.desc = data.desc;
       order.status = OrderState.normal;
+      order.title = `客户:${customer.name}`;
 
       const orderModel = await this.orderService.create(order);
 
@@ -153,7 +159,7 @@ export class OrderController extends CommonController<Order> {
       if (!salerModel) {
         this.logger.error('订单找不到主要销售人员, 订单ID: ${id}');
       } else {
-        result = Object.assign({}, result, { saler: salerModel });
+        result = Object.assign({}, result, { salerUser: salerModel });
       }
 
       if (orderModel.hepler !== undefined && orderModel.hepler !== null) {
@@ -163,7 +169,7 @@ export class OrderController extends CommonController<Order> {
         if (!heplerModel) {
           this.logger.error('订单找不到辅助销售人员, 订单ID: ${id}');
         } else {
-          result = Object.assign({}, result, { hepler: heplerModel });
+          result = Object.assign({}, result, { heplerUser: heplerModel });
         }
       }
 
@@ -175,7 +181,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_findAll'))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('OrderController_findAll'))
   async findAllByUser(@Req() request) {
     try {
       const user = request.user;
@@ -192,14 +198,14 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Get('/find/all/:page')
-  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_findAll'))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('OrderController_findAll'))
   async findAllOrderByPage(@Param('page') page: number, @Query() params) {
-    const result = this.orderService.findAllOrderByPage(page, 20, params);
+    const result = await this.orderService.findAllOrderByPage(page, 20, params);
     return resultHelper.success(result);
   }
 
   @Put('/status/cancel/:id')
-  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_update'))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('OrderController_update'))
   async cancel(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);
@@ -236,7 +242,7 @@ export class OrderController extends CommonController<Order> {
   }
 
   @Put('/status/return/:id')
-  @UseGuards(JwtAuthGuard, createPermissionGurad('PermissionGuard_update'))
+  @UseGuards(JwtAuthGuard, createPermissionGurad('OrderController_update'))
   async returnOrder(@Param('id') id: number) {
     try {
       const orderModel = await this.orderService.findOne(id);

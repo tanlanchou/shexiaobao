@@ -23,7 +23,7 @@ export class OrderService extends CommonService<Order> {
     limit: number,
     params: any,
   ): Promise<{ results: Order[]; total: number }> {
-    const query = this.orderRepository.createQueryBuilder('order');
+    let query = this.orderRepository.createQueryBuilder('order');
 
     const euqalKeys = [
       'customerId',
@@ -38,37 +38,92 @@ export class OrderService extends CommonService<Order> {
 
     euqalKeys.forEach((key) => {
       if (params[key] !== undefined && params[key] !== null) {
-        query.andWhere(
-          `${key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()} = :id`,
+        query = query.andWhere(
+          `${key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()} = :${key}`,
           {
-            id: params[key],
+            [key]: params[key],
           },
         );
       }
     });
 
-    if (!params.keyWords) {
-      const likeKeys = ['account', 'desc'];
+    if (!!params.keywords) {
+      const likeKeys = ['account', `'desc'`];
 
       let sql = '(';
       likeKeys.forEach((key) => {
-        if (params[key] !== undefined && params[key] !== null) {
-          if (sql.length !== 1) {
-            sql += ` and `;
-          }
-          sql += `${key
-            .replace(/([a-z])([A-Z])/g, '$1_$2')
-            .toLowerCase()} like :keyWords`;
+        if (sql.length !== 1) {
+          sql += ` or `;
         }
+        sql += `${key
+          .replace(/([a-z])([A-Z])/g, '$1_$2')
+          .toLowerCase()} like :keywords`;
       });
       sql += ')';
-      query.andWhere(sql, {
-        keyWords: `%${params.keyWords}%`,
+      query = query.andWhere(sql, {
+        keywords: `%${params.keywords}%`,
       });
     }
 
+    if (params.user && params.user > 0) {
+      query = query.andWhere(
+        `(saler = :userId or hepler = :userId)`,
+        {
+          userId: params.user,
+        },
+      );
+    }
+
+    if (params.maxMoney && params.maxMoney > 0) {
+      query = query.andWhere(
+        `money < :maxMoney`,
+        {
+          maxMoney: params.maxMoney,
+        },
+      );
+    }
+
+    if (params.minMoney && params.minMoney > 0) {
+      query = query.andWhere(
+        `money > :minMoney`,
+        {
+          minMoney: params.minMoney,
+        },
+      );
+    }
+
+    if (params.maxAmountReceivable && params.maxAmountReceivable > 0) {
+      query = query.andWhere(
+        `amount_receivable < :maxAmountReceivable`,
+        {
+          maxAmountReceivable: params.maxAmountReceivable,
+        },
+      );
+    }
+
+    if (params.minAmountReceivable && params.minAmountReceivable > 0) {
+      query = query.andWhere(
+        `amount_receivable > :minAmountReceivable`,
+        {
+          minAmountReceivable: params.minAmountReceivable,
+        },
+      );
+    }
+
+    if (params.saleRange) {
+      const timeMax = params.saleRange.split(',');
+      query = query.andWhere(
+        `(sale_time > :startTime and sale_time < :endTime)`,
+        {
+          startTime: timeMax[0],
+          endTime: timeMax[1]
+        },
+      );
+    }
+
+
     const [results, total] = await query
-      .orderBy('saleTime', 'DESC')
+      .orderBy('id', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();

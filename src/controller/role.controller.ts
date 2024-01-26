@@ -108,7 +108,12 @@ export class RoleController extends CommonController<Role> {
         return resultHelper.error(500, '删除失败，还有用户在使用这个角色');
       }
 
-      if(result.status == RoleStatus.system) {
+      const roleModel = await this.roleService.findOne(id);
+      if (!roleModel) {
+        return resultHelper.error(500, '没有找到角色');
+      }
+
+      if (roleModel.status == RoleStatus.system) {
         return resultHelper.error(500, '系统角色不能删除');
       }
 

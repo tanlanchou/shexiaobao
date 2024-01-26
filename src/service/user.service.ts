@@ -41,9 +41,9 @@ export class UserService {
       query.where('user.role_id = :roleId', { roleId: params.roleId });
     }
 
-    if (params.nickname) {
-      query.andWhere('user.nickname like :nickname', {
-        nickname: `%${params.nickname}%`,
+    if (params.keywords) {
+      query.andWhere('(user.nickname like :keywords || user.phone_number like :keywords)', {
+        keywords: `%${params.keywords}%`,
       });
     }
 
@@ -53,11 +53,6 @@ export class UserService {
       });
     }
 
-    if (params.phoneNumber) {
-      query.andWhere('user.phone_number = :phoneNumber', {
-        phoneNumber: params.phoneNumber,
-      });
-    }
 
     if (params.createTimeRange && params.createTimeRange.length > 0) {
       const time = params.createTimeRange.split(',');
@@ -85,7 +80,7 @@ export class UserService {
           break;
         case '2':
           query.orderBy('user.lastLoginTime', 'DESC');
-          break;
+          break; 
         case '3':
           query.orderBy('user.lastLoginTime', 'ASC');
           break;

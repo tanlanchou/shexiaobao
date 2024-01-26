@@ -25,4 +25,5 @@ export type productSearchType = {
   buyer?: number;
   productTag?: string[];
   productAttach?: string[];
+  status?: number;
 };
